@@ -6,8 +6,8 @@ import {
   OneToMany,
   Property,
 } from '@mikro-orm/core';
-import { BaseEntity } from './base.entity';
-import { User } from './user.entity';
+import { BaseEntity } from '../base/base.entity';
+import { User } from '../user/user.entity';
 import { OrderItem } from './order-item.entity';
 
 export enum OrderStatus {

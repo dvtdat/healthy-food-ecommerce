@@ -1,6 +1,6 @@
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
-import { BaseEntity } from './base.entity';
-import { Product } from './product.entity';
+import { BaseEntity } from '../base/base.entity';
+import { Product } from '../product/product.entity';
 import { Order } from './order.entity';
 
 @Entity()

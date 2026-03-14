@@ -1,6 +1,6 @@
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
-import { BaseEntity } from './base.entity';
-import { Category } from './category.entity';
+import { BaseEntity } from '../base/base.entity';
+import { Category } from '../category/category.entity';
 
 @Entity()
 export class Product extends BaseEntity {

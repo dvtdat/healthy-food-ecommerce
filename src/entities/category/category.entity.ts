@@ -1,5 +1,5 @@
 import { Entity, Property } from '@mikro-orm/core';
-import { BaseEntity } from './base.entity';
+import { BaseEntity } from '../base/base.entity';
 
 @Entity()
 export class Category extends BaseEntity {

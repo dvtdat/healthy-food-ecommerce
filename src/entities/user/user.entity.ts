@@ -1,5 +1,5 @@
 import { Entity, Enum, Property } from '@mikro-orm/core';
-import { BaseEntity } from './base.entity';
+import { BaseEntity } from '../base/base.entity';
 
 export enum UserRole {
   GUEST = 'guest',
