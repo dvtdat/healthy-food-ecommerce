@@ -5,6 +5,9 @@ import config from '../mikro-orm.config';
 import { RoleGuard } from './common/guards/role.guard';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
+import { CategoryModule } from './modules/category/category.module';
+import { ProductModule } from './modules/product/product.module';
+import { OrderModule } from './modules/order/order.module';
 import { EncryptionService } from './common/services/encryption.service';
 import { EncryptionSubscriber } from './common/subscribers/encryption.subscriber';
 import { MikroORM } from '@mikro-orm/core';
@@ -13,6 +16,9 @@ import { MikroORM } from '@mikro-orm/core';
   imports: [
     UserModule,
     AuthModule,
+    CategoryModule,
+    ProductModule,
+    OrderModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
