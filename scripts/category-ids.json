@@ -1,0 +1,26 @@
+{
+  "beverages": {
+    "name": "Beverages",
+    "id": "69b636979d62f6367ff00cd6"
+  },
+  "dairy-alternatives": {
+    "name": "Dairy & Alternatives",
+    "id": "69b636989d62f6367ff00cd7"
+  },
+  "fruits-vegetables": {
+    "name": "Fruits & Vegetables",
+    "id": "69b636979d62f6367ff00cd3"
+  },
+  "grains-cereals": {
+    "name": "Grains & Cereals",
+    "id": "69b636979d62f6367ff00cd4"
+  },
+  "nuts-seeds": {
+    "name": "Nuts & Seeds",
+    "id": "69b636979d62f6367ff00cd5"
+  },
+  "superfoods-supplements": {
+    "name": "Superfoods & Supplements",
+    "id": "69b636989d62f6367ff00cd8"
+  }
+}
