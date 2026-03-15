@@ -17,11 +17,11 @@ import {
 } from 'src/common/decorators/current-user.decorator';
 
 @UseGuards(JwtAuthGuard)
-@Controller('cart')
+@Controller('carts')
 export class CartController {
   constructor(private readonly cartService: CartService) {}
 
-  @Get()
+  @Get('me')
   getCart(@CurrentUser() currentUser: CurrentUserData) {
     return this.cartService.getCart(currentUser);
   }
