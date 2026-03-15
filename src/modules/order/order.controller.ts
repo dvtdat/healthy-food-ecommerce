@@ -45,7 +45,7 @@ export class OrderController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('my')
+  @Get('me')
   findMyOrders(
     @CurrentUser() currentUser: CurrentUserData,
     @Query('pageSize', new ParseIntPipe({ optional: true })) pageSize = 10,
