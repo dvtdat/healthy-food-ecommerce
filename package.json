@@ -24,7 +24,8 @@
     "pre-push": "yarn lint:check && yarn typecheck && yarn build",
     "lint:check": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "typecheck": "tsc --noEmit",
-    "test:quick": "jest --passWithNoTests --silent --maxWorkers=2"
+    "test:quick": "jest --passWithNoTests --silent --maxWorkers=2",
+    "swagger:generate": "ts-node -r tsconfig-paths/register src/scripts/generate-swagger.ts"
   },
   "dependencies": {
     "@mikro-orm/core": "^6.5.5",
@@ -46,6 +47,7 @@
     "class-validator": "^0.14.3",
     "crypto-js": "^4.2.0",
     "dotenv": "^17.2.2",
+    "js-yaml": "^4.1.1",
     "lodash": "^4.17.21",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
@@ -68,6 +70,7 @@
     "@types/crypto-js": "^4.2.2",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.10.7",
     "@types/passport-google-oauth20": "^2.0.16",
     "@types/passport-jwt": "^4.0.1",

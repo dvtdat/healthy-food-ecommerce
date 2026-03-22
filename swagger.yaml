@@ -1,0 +1,510 @@
+openapi: 3.0.0
+paths:
+  /users:
+    post:
+      operationId: UserController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserDto'
+      responses:
+        '201':
+          description: ''
+      tags: &ref_0
+        - User
+    get:
+      operationId: UserController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_0
+  /users/me:
+    get:
+      operationId: UserController_getMe
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_0
+  /users/{id}:
+    get:
+      operationId: UserController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_0
+    patch:
+      operationId: UserController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_0
+    delete:
+      operationId: UserController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_0
+  /users/email/{email}:
+    get:
+      operationId: UserController_findByEmail
+      parameters:
+        - name: email
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_0
+  /auth/login:
+    post:
+      operationId: AuthController_login
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: &ref_1
+        - Auth
+  /auth/refresh:
+    post:
+      operationId: AuthController_refreshToken
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags: *ref_1
+  /categories:
+    post:
+      operationId: CategoryController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCategoryDto'
+      responses:
+        '201':
+          description: ''
+      tags: &ref_2
+        - Category
+    get:
+      operationId: CategoryController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_2
+  /categories/slug/{slug}:
+    get:
+      operationId: CategoryController_findBySlug
+      parameters:
+        - name: slug
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_2
+  /categories/{id}:
+    get:
+      operationId: CategoryController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_2
+    patch:
+      operationId: CategoryController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCategoryDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_2
+    delete:
+      operationId: CategoryController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_2
+  /products:
+    post:
+      operationId: ProductController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductDto'
+      responses:
+        '201':
+          description: ''
+      tags: &ref_3
+        - Product
+    get:
+      operationId: ProductController_findAll
+      parameters:
+        - name: categoryId
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+  /products/slug/{slug}:
+    get:
+      operationId: ProductController_findBySlug
+      parameters:
+        - name: slug
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+  /products/{id}:
+    get:
+      operationId: ProductController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+    patch:
+      operationId: ProductController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProductDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+    delete:
+      operationId: ProductController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_3
+  /orders:
+    post:
+      operationId: OrderController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderDto'
+      responses:
+        '201':
+          description: ''
+      tags: &ref_4
+        - Order
+    get:
+      operationId: OrderController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_4
+  /orders/me:
+    get:
+      operationId: OrderController_findMyOrders
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_4
+  /orders/{id}:
+    get:
+      operationId: OrderController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_4
+    delete:
+      operationId: OrderController_cancel
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_4
+  /orders/{id}/status:
+    patch:
+      operationId: OrderController_updateStatus
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrderStatusDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_4
+  /carts/me:
+    get:
+      operationId: CartController_getCart
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: &ref_5
+        - Cart
+  /carts/items:
+    post:
+      operationId: CartController_addItem
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddCartItemDto'
+      responses:
+        '201':
+          description: ''
+      tags: *ref_5
+  /carts/items/{productId}:
+    patch:
+      operationId: CartController_updateItem
+      parameters:
+        - name: productId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCartItemDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_5
+    delete:
+      operationId: CartController_removeItem
+      parameters:
+        - name: productId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_5
+  /carts:
+    delete:
+      operationId: CartController_clearCart
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags: *ref_5
+  /reviews:
+    post:
+      operationId: ReviewController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReviewDto'
+      responses:
+        '201':
+          description: ''
+      tags: &ref_6
+        - Review
+    get:
+      operationId: ReviewController_findByProduct
+      parameters:
+        - name: productId
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_6
+  /reviews/{id}:
+    patch:
+      operationId: ReviewController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateReviewDto'
+      responses:
+        '200':
+          description: ''
+      tags: *ref_6
+    delete:
+      operationId: ReviewController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags: *ref_6
+info:
+  title: Healthy Food E-Commerce API
+  description: Healthy Food E-Commerce API description
+  version: '1.0'
+  contact: {}
+tags: []
+servers: []
+components:
+  securitySchemes:
+    bearer:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+  schemas:
+    CreateUserDto:
+      type: object
+      properties: {}
+    UpdateUserDto:
+      type: object
+      properties: {}
+    CreateCategoryDto:
+      type: object
+      properties: {}
+    UpdateCategoryDto:
+      type: object
+      properties: {}
+    CreateProductDto:
+      type: object
+      properties: {}
+    UpdateProductDto:
+      type: object
+      properties: {}
+    CreateOrderDto:
+      type: object
+      properties: {}
+    UpdateOrderStatusDto:
+      type: object
+      properties: {}
+    AddCartItemDto:
+      type: object
+      properties: {}
+    UpdateCartItemDto:
+      type: object
+      properties: {}
+    CreateReviewDto:
+      type: object
+      properties: {}
+    UpdateReviewDto:
+      type: object
+      properties: {}
