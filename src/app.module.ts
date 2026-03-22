@@ -10,6 +10,7 @@ import { ProductModule } from './modules/product/product.module';
 import { OrderModule } from './modules/order/order.module';
 import { CartModule } from './modules/cart/cart.module';
 import { ReviewModule } from './modules/review/review.module';
+import { WebhookModule } from './modules/webhook/webhook.module';
 import { EncryptionService } from './common/services/encryption.service';
 import { EncryptionSubscriber } from './common/subscribers/encryption.subscriber';
 import { MikroORM } from '@mikro-orm/core';
@@ -23,6 +24,7 @@ import { MikroORM } from '@mikro-orm/core';
     OrderModule,
     CartModule,
     ReviewModule,
+    WebhookModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),

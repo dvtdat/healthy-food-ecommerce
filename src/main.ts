@@ -1,11 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
+import * as ngrok from '@ngrok/ngrok';
 
 const DEFAULT_PORT = 3300;
 
 async function bootstrap() {
+  const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
@@ -27,6 +29,18 @@ async function bootstrap() {
 
   SwaggerModule.setup('api', app, documentFactory);
 
-  await app.listen(process.env.PORT ?? DEFAULT_PORT);
+  const port = process.env.PORT ?? DEFAULT_PORT;
+  await app.listen(port);
+  logger.log(`Application running on http://localhost:${port}`);
+
+  if (process.env.NODE_ENV !== 'production' && process.env.NGROK_AUTHTOKEN) {
+    const listener = await ngrok.connect({
+      addr: port,
+      authtoken: process.env.NGROK_AUTHTOKEN,
+    });
+    const url = listener.url();
+    logger.log(`Ngrok tunnel: ${url}`);
+    logger.log(`Casso webhook URL: ${url}/webhooks/casso`);
+  }
 }
 void bootstrap();
