@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto, UpdateUserStatusDto } from './dto';
 import { EntityRepository, ObjectId } from '@mikro-orm/mongodb';
-import { User, UserRole } from 'src/entities';
+import { Order, User, UserRole } from 'src/entities';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { utils } from 'src/common/utils';
 import { CurrentUserData } from 'src/common/decorators/current-user.decorator';
@@ -14,7 +14,11 @@ import { CurrentUserData } from 'src/common/decorators/current-user.decorator';
 export class UserService {
   private userRepository: EntityRepository<User>;
 
-  constructor(@InjectRepository(User) userRepository: EntityRepository<User>) {
+  constructor(
+    @InjectRepository(User) userRepository: EntityRepository<User>,
+    @InjectRepository(Order)
+    private readonly orderRepository: EntityRepository<Order>,
+  ) {
     this.userRepository = userRepository;
   }
 
@@ -38,7 +42,7 @@ export class UserService {
     return user;
   }
 
-  async findAll(pageSize = 10, pageNumber = 1) {
+  async findAll(pageSize = 10, pageNumber = 1): Promise<any> {
     const [users, total] = await this.userRepository.findAndCount(
       { deletedAt: null },
       {
@@ -48,8 +52,65 @@ export class UserService {
       },
     );
 
+    const orders = await this.orderRepository.find({
+      user: { $in: users.map((u) => u._id) } as any,
+      deletedAt: null,
+    });
+
+    const statsMap = new Map<
+      string,
+      { orderCount: number; totalSpent: number }
+    >();
+    for (const order of orders) {
+      const key = order.user._id.toHexString();
+      const entry = statsMap.get(key) ?? { orderCount: 0, totalSpent: 0 };
+      statsMap.set(key, {
+        orderCount: entry.orderCount + 1,
+        totalSpent: entry.totalSpent + order.totalAmount,
+      });
+    }
+
+    const data = users.map((user) => {
+      const { orderCount = 0, totalSpent = 0 } =
+        statsMap.get(user._id.toHexString()) ?? {};
+      return { ...user, orderCount, totalSpent };
+    });
+
     return {
-      data: users,
+      data,
+      total,
+      pageSize,
+      pageNumber,
+      totalPages: Math.ceil(total / pageSize),
+    };
+  }
+
+  async findUserOrders(
+    userId: string,
+    pageSize = 10,
+    pageNumber = 1,
+  ): Promise<any> {
+    const user = await this.userRepository.findOne({
+      _id: new ObjectId(userId),
+      deletedAt: null,
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const [data, total] = await this.orderRepository.findAndCount(
+      { user: new ObjectId(userId), deletedAt: null },
+      {
+        limit: pageSize,
+        offset: (pageNumber - 1) * pageSize,
+        orderBy: { createdAt: 'desc' },
+        populate: ['items', 'items.product', 'payment'] as any,
+      },
+    );
+
+    return {
+      data,
       total,
       pageSize,
       pageNumber,

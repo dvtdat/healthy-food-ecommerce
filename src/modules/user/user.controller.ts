@@ -53,6 +53,17 @@ export class UserController {
   findOne(@Param('id') id: string) {
     return this.userService.findById(id);
   }
+
+  @Roles(UserRole.ADMIN)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Get(':id/orders')
+  findUserOrders(
+    @Param('id') id: string,
+    @Query('pageSize', new ParseIntPipe({ optional: true })) pageSize = 10,
+    @Query('pageNumber', new ParseIntPipe({ optional: true })) pageNumber = 1,
+  ) {
+    return this.userService.findUserOrders(id, pageSize, pageNumber);
+  }
   @Get('email/:email')
   findByEmail(@Param('email') email: string) {
     return this.userService.findByEmail(email);

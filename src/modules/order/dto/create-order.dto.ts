@@ -1,32 +1,6 @@
-import { Type } from 'class-transformer';
-import {
-  ArrayMinSize,
-  IsArray,
-  IsInt,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  Min,
-  ValidateNested,
-} from 'class-validator';
-
-export class OrderItemDto {
-  @IsNotEmpty()
-  @IsString()
-  productId!: string;
-
-  @IsInt()
-  @Min(1)
-  quantity!: number;
-}
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateOrderDto {
-  @IsArray()
-  @ArrayMinSize(1)
-  @ValidateNested({ each: true })
-  @Type(() => OrderItemDto)
-  items!: OrderItemDto[];
-
   @IsNotEmpty()
   @IsString()
   shippingAddress!: string;

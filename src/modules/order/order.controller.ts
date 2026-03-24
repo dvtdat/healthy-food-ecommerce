@@ -10,6 +10,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { OrderStatus, UserRole } from 'src/entities';
 import { OrderService } from './order.service';
 import { CreateOrderDto, UpdateOrderStatusDto } from './dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth/jwt-auth.guard';
@@ -19,7 +20,6 @@ import {
   CurrentUser,
   CurrentUserData,
 } from 'src/common/decorators/current-user.decorator';
-import { UserRole } from 'src/entities';
 
 @Controller('orders')
 export class OrderController {
@@ -40,8 +40,10 @@ export class OrderController {
   findAll(
     @Query('pageSize', new ParseIntPipe({ optional: true })) pageSize = 10,
     @Query('pageNumber', new ParseIntPipe({ optional: true })) pageNumber = 1,
+    @Query('status') status?: OrderStatus,
+    @Query('userId') userId?: string,
   ) {
-    return this.orderService.findAll(pageSize, pageNumber);
+    return this.orderService.findAll(pageSize, pageNumber, status, userId);
   }
 
   @UseGuards(JwtAuthGuard)

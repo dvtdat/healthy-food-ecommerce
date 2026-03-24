@@ -2,7 +2,7 @@ import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository, ObjectId } from '@mikro-orm/mongodb';
-import { Order, OrderStatus, Payment } from 'src/entities';
+import { Order, OrderStatus, Payment, StatusHistoryEntry } from 'src/entities';
 import { CassoWebhookDto } from './dto/casso-webhook.dto';
 
 @Injectable()
@@ -88,6 +88,13 @@ export class WebhookService {
     const em = this.orderRepository.getEntityManager();
 
     order.status = OrderStatus.CONFIRMED;
+    order.statusHistory = [
+      ...order.statusHistory,
+      new StatusHistoryEntry(
+        OrderStatus.CONFIRMED,
+        'Payment confirmed via Casso',
+      ),
+    ];
     em.persist(order);
 
     const payment = new Payment(

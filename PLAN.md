@@ -104,19 +104,19 @@ Check off items as they are completed.
 
 ### Phase 4 — Order Delivery Tracking
 
-- [ ] **4.1** Add delivery fields to `Order` entity — `trackingNumber?`, `courierName?`, `estimatedDeliveryDate?`, `actualDeliveryDate?`
-- [ ] **4.2** Add embedded `statusHistory[]` to `Order` — `{ status, changedAt, note }` — append on every status change
-- [ ] **4.3** Update `PATCH /orders/:id/status` — require `trackingNumber` + `courierName` when transitioning to SHIPPED; set `actualDeliveryDate` on DELIVERED
-- [ ] **4.4** Return `statusHistory[]` in `GET /orders/:id` so user can see the full delivery timeline
+- [x] **4.1** Add delivery fields to `Order` entity — `trackingNumber?`, `courierName?`, `estimatedDeliveryDate?`, `actualDeliveryDate?`
+- [x] **4.2** Add embedded `statusHistory[]` to `Order` — `{ status, changedAt, note }` — append on every status change
+- [x] **4.3** Update `PATCH /orders/:id/status` — require `trackingNumber` + `courierName` when transitioning to SHIPPED; set `actualDeliveryDate` on DELIVERED
+- [x] **4.4** Return `statusHistory[]` in `GET /orders/:id` so user can see the full delivery timeline
 
 ---
 
 ### Phase 5 — Admin: User & Order Management
 
-- [ ] **5.1** Admin: list a user's orders — `GET /users/:id/orders` (paginated)
-- [ ] **5.2** Payment detail included in order response via populated `payment` field (covered by 3.3)
-- [ ] **5.3** Admin: `GET /users` response includes `orderCount` and `totalSpent` aggregates per user
-- [ ] **5.4** Admin: filter orders by status and/or userId — `GET /orders?status=PENDING&userId=...`
+- [x] **5.1** Admin: list a user's orders — `GET /users/:id/orders` (paginated)
+- [x] **5.2** Payment detail included in order response via populated `payment` field (covered by 3.3)
+- [x] **5.3** Admin: `GET /users` response includes `orderCount` and `totalSpent` aggregates per user
+- [x] **5.4** Admin: filter orders by status and/or userId — `GET /orders?status=PENDING&userId=...`
 
 ---
 
