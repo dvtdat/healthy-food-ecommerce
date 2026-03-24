@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository, ObjectId } from '@mikro-orm/mongodb';
-import { Category, Product } from 'src/entities';
+import { wrap } from '@mikro-orm/core';
+import { Category, Product, Review } from 'src/entities';
 import { CreateProductDto, UpdateProductDto } from './dto';
 
 @Injectable()
@@ -11,7 +12,40 @@ export class ProductService {
     private readonly productRepository: EntityRepository<Product>,
     @InjectRepository(Category)
     private readonly categoryRepository: EntityRepository<Category>,
+    @InjectRepository(Review)
+    private readonly reviewRepository: EntityRepository<Review>,
   ) {}
+
+  private async getReviewStats(
+    productIds: ObjectId[],
+  ): Promise<Map<string, { averageRating: number; reviewCount: number }>> {
+    const reviews = await this.reviewRepository.find({
+      product: { $in: productIds } as any,
+      deletedAt: null,
+    });
+
+    const totals = new Map<string, { sum: number; count: number }>();
+    for (const review of reviews) {
+      const key = review.product._id.toHexString();
+      const entry = totals.get(key) ?? { sum: 0, count: 0 };
+      totals.set(key, {
+        sum: entry.sum + review.rating,
+        count: entry.count + 1,
+      });
+    }
+
+    const stats = new Map<
+      string,
+      { averageRating: number; reviewCount: number }
+    >();
+    for (const [key, { sum, count }] of totals) {
+      stats.set(key, {
+        averageRating: Math.round((sum / count) * 10) / 10,
+        reviewCount: count,
+      });
+    }
+    return stats;
+  }
 
   async create(createProductDto: CreateProductDto) {
     const existing = await this.productRepository.findOne({
@@ -45,18 +79,30 @@ export class ProductService {
     return product;
   }
 
-  async findAll(pageSize = 10, pageNumber = 1, categoryId?: string) {
+  async findAll(
+    pageSize = 10,
+    pageNumber = 1,
+    categoryId?: string,
+  ): Promise<any> {
     const where: Record<string, unknown> = { deletedAt: null };
 
     if (categoryId) {
       where.category = new ObjectId(categoryId);
     }
 
-    const [data, total] = await this.productRepository.findAndCount(where, {
+    const [products, total] = await this.productRepository.findAndCount(where, {
       limit: pageSize,
       offset: (pageNumber - 1) * pageSize,
       orderBy: { createdAt: 'desc' },
       populate: ['category'],
+    });
+
+    const stats = await this.getReviewStats(products.map((p) => p._id));
+
+    const data = products.map((product) => {
+      const { averageRating = 0, reviewCount = 0 } =
+        stats.get(product._id.toHexString()) ?? {};
+      return { ...wrap(product).toPOJO(), averageRating, reviewCount };
     });
 
     return {
@@ -68,7 +114,7 @@ export class ProductService {
     };
   }
 
-  async findById(id: string) {
+  async findById(id: string): Promise<any> {
     const product = await this.productRepository.findOne(
       { _id: new ObjectId(id), deletedAt: null },
       { populate: ['category'] },
@@ -78,10 +124,13 @@ export class ProductService {
       throw new NotFoundException('Product not found');
     }
 
-    return product;
+    const stats = await this.getReviewStats([product._id]);
+    const { averageRating = 0, reviewCount = 0 } =
+      stats.get(product._id.toHexString()) ?? {};
+    return { ...wrap(product).toPOJO(), averageRating, reviewCount };
   }
 
-  async findBySlug(slug: string) {
+  async findBySlug(slug: string): Promise<any> {
     const product = await this.productRepository.findOne(
       { slug, deletedAt: null },
       { populate: ['category'] },
@@ -91,7 +140,10 @@ export class ProductService {
       throw new NotFoundException('Product not found');
     }
 
-    return product;
+    const stats = await this.getReviewStats([product._id]);
+    const { averageRating = 0, reviewCount = 0 } =
+      stats.get(product._id.toHexString()) ?? {};
+    return { ...wrap(product).toPOJO(), averageRating, reviewCount };
   }
 
   async update(id: string, updateProductDto: UpdateProductDto) {

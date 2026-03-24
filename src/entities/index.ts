@@ -7,3 +7,4 @@ export * from './order/order-item.entity';
 export * from './cart/cart.entity';
 export * from './cart/cart-item.entity';
 export * from './review/review.entity';
+export * from './payment/payment.entity';

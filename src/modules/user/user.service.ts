@@ -1,9 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateUserDto, UpdateUserDto } from './dto';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { CreateUserDto, UpdateUserDto, UpdateUserStatusDto } from './dto';
 import { EntityRepository, ObjectId } from '@mikro-orm/mongodb';
-import { User } from 'src/entities';
+import { User, UserRole } from 'src/entities';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { utils } from 'src/common/utils';
+import { CurrentUserData } from 'src/common/decorators/current-user.decorator';
 
 @Injectable()
 export class UserService {
@@ -84,14 +89,29 @@ export class UserService {
     return userWithoutPassword;
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+    currentUser: CurrentUserData,
+  ) {
+    const isOwner = currentUser._id === id;
+    const isAdmin = currentUser.role === UserRole.ADMIN;
+
+    if (!isOwner && !isAdmin) {
+      throw new ForbiddenException('Access denied');
+    }
+
     const user = await this.userRepository.findOne({
       _id: new ObjectId(id),
       deletedAt: null,
     });
 
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
+    }
+
+    if (updateUserDto.role && !isAdmin) {
+      throw new ForbiddenException('Only admins can change user roles');
     }
 
     if (updateUserDto.password) {
@@ -103,6 +123,25 @@ export class UserService {
 
     await this.userRepository.getEntityManager().persistAndFlush(user);
     return user;
+  }
+
+  async updateStatus(id: string, dto: UpdateUserStatusDto) {
+    const user = await this.userRepository.findOne({
+      _id: new ObjectId(id),
+      deletedAt: null,
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    user.isActive = dto.isActive;
+    user.updatedAt = new Date();
+    await this.userRepository.getEntityManager().persistAndFlush(user);
+
+    return {
+      message: `User ${dto.isActive ? 'activated' : 'deactivated'} successfully`,
+    };
   }
 
   async remove(id: string) {

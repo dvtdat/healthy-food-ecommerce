@@ -24,6 +24,9 @@ export class User extends BaseEntity {
   @Enum(() => UserRole)
   role: UserRole;
 
+  @Property({ default: true })
+  isActive = true;
+
   constructor(
     email: string,
     firstName: string,

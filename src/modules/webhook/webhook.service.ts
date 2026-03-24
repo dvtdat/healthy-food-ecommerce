@@ -2,7 +2,7 @@ import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository, ObjectId } from '@mikro-orm/mongodb';
-import { Order, OrderStatus } from 'src/entities';
+import { Order, OrderStatus, Payment } from 'src/entities';
 import { CassoWebhookDto } from './dto/casso-webhook.dto';
 
 @Injectable()
@@ -13,6 +13,8 @@ export class WebhookService {
     private readonly configService: ConfigService,
     @InjectRepository(Order)
     private readonly orderRepository: EntityRepository<Order>,
+    @InjectRepository(Payment)
+    private readonly paymentRepository: EntityRepository<Payment>,
   ) {}
 
   validateSignature(signature: string | undefined): void {
@@ -83,8 +85,24 @@ export class WebhookService {
       return;
     }
 
+    const em = this.orderRepository.getEntityManager();
+
     order.status = OrderStatus.CONFIRMED;
-    await this.orderRepository.getEntityManager().persistAndFlush(order);
+    em.persist(order);
+
+    const payment = new Payment(
+      order,
+      data.id,
+      data.amount,
+      data.description,
+      new Date(),
+      data.bankName,
+      data.bankAbbreviation,
+      data.accountNumber,
+    );
+    em.persist(payment);
+
+    await em.flush();
 
     this.logger.log(`Order ${orderId} confirmed via Casso payment`);
   }

@@ -4,11 +4,13 @@ import {
   Enum,
   ManyToOne,
   OneToMany,
+  OneToOne,
   Property,
 } from '@mikro-orm/core';
 import { BaseEntity } from '../base/base.entity';
 import { User } from '../user/user.entity';
 import { OrderItem } from './order-item.entity';
+import { Payment } from '../payment/payment.entity';
 
 export enum OrderStatus {
   PENDING = 'pending',
@@ -25,6 +27,12 @@ export class Order extends BaseEntity {
 
   @OneToMany(() => OrderItem, (item) => item.order)
   items = new Collection<OrderItem>(this);
+
+  @OneToOne(() => Payment, (payment) => payment.order, {
+    nullable: true,
+    lazy: true,
+  })
+  payment?: Payment;
 
   @Enum(() => OrderStatus)
   status: OrderStatus = OrderStatus.PENDING;

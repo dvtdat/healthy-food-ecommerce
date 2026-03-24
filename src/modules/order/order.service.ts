@@ -127,7 +127,7 @@ export class OrderService {
   async findById(id: string, currentUser: CurrentUserData) {
     const order = await this.orderRepository.findOne(
       { _id: new ObjectId(id), deletedAt: null },
-      { populate: ['user', 'items', 'items.product'] },
+      { populate: ['user', 'items', 'items.product', 'payment'] },
     );
 
     if (!order) {
