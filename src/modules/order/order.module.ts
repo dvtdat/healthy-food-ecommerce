@@ -11,6 +11,7 @@ import {
   Product,
   User,
 } from 'src/entities';
+import { VietQRService } from 'src/common/services/vietqr.service';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import {
     ]),
   ],
   controllers: [OrderController],
-  providers: [OrderService],
+  providers: [OrderService, VietQRService],
   exports: [OrderService],
 })
 export class OrderModule {}

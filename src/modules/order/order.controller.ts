@@ -57,6 +57,15 @@ export class OrderController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get(':id/payment-qr')
+  getPaymentQr(
+    @Param('id') id: string,
+    @CurrentUser() currentUser: CurrentUserData,
+  ) {
+    return this.orderService.getPaymentQr(id, currentUser);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(
     @Param('id') id: string,

@@ -19,6 +19,7 @@ import {
 } from 'src/entities';
 import { CreateOrderDto, UpdateOrderStatusDto } from './dto';
 import { CurrentUserData } from 'src/common/decorators/current-user.decorator';
+import { VietQRService } from 'src/common/services/vietqr.service';
 
 @Injectable()
 export class OrderService {
@@ -35,6 +36,7 @@ export class OrderService {
     private readonly cartRepository: EntityRepository<Cart>,
     @InjectRepository(CartItem)
     private readonly cartItemRepository: EntityRepository<CartItem>,
+    private readonly vietQRService: VietQRService,
   ) {}
 
   async create(dto: CreateOrderDto, currentUser: CurrentUserData) {
@@ -242,5 +244,31 @@ export class OrderService {
     await em.flush();
 
     return order;
+  }
+
+  async getPaymentQr(id: string, currentUser: CurrentUserData) {
+    const order = await this.orderRepository.findOne(
+      { _id: new ObjectId(id), deletedAt: null },
+      { populate: ['user'] },
+    );
+
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    const isOwner = order.user._id.equals(new ObjectId(currentUser._id));
+    const isAdmin = currentUser.role === UserRole.ADMIN;
+
+    if (!isOwner && !isAdmin) {
+      throw new ForbiddenException('Access denied');
+    }
+
+    if (order.status !== OrderStatus.PENDING) {
+      throw new BadRequestException(
+        'QR code is only available for pending orders',
+      );
+    }
+
+    return this.vietQRService.getPaymentInfo(id, order.totalAmount);
   }
 }
