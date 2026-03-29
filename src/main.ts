@@ -27,6 +27,7 @@ async function bootstrap() {
     .setTitle('Healthy Food E-Commerce API')
     .setDescription('Healthy Food E-Commerce API description')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   const documentFactory = () => SwaggerModule.createDocument(app, config);

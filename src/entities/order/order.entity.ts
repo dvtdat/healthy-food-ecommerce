@@ -9,6 +9,7 @@ import {
   OneToOne,
   Property,
 } from '@mikro-orm/core';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BaseEntity } from '../base/base.entity';
 import { User } from '../user/user.entity';
 import { OrderItem } from './order-item.entity';
@@ -16,12 +17,15 @@ import { Payment } from '../payment/payment.entity';
 
 @Embeddable()
 export class StatusHistoryEntry {
+  @ApiProperty({ example: 'pending' })
   @Property()
   status!: string;
 
+  @ApiProperty()
   @Property()
   changedAt: Date = new Date();
 
+  @ApiPropertyOptional()
   @Property({ nullable: true })
   note?: string;
 
@@ -41,42 +45,54 @@ export enum OrderStatus {
 
 @Entity()
 export class Order extends BaseEntity {
+  @ApiProperty({ type: () => User })
   @ManyToOne(() => User)
   user!: User;
 
+  @ApiPropertyOptional({ type: () => [OrderItem] })
   @OneToMany(() => OrderItem, (item) => item.order)
   items = new Collection<OrderItem>(this);
 
+  @ApiPropertyOptional({ type: () => Payment })
   @OneToOne(() => Payment, (payment) => payment.order, {
     nullable: true,
     lazy: true,
   })
   payment?: Payment;
 
+  @ApiProperty({ enum: OrderStatus, example: OrderStatus.PENDING })
   @Enum(() => OrderStatus)
   status: OrderStatus = OrderStatus.PENDING;
 
+  @ApiProperty({ type: () => [StatusHistoryEntry] })
   @Embedded(() => StatusHistoryEntry, { array: true })
   statusHistory: StatusHistoryEntry[] = [];
 
+  @ApiProperty({ example: 150000 })
   @Property({ type: 'number' })
   totalAmount!: number;
 
+  @ApiProperty({ example: '123 Nguyen Hue, District 1, HCMC' })
   @Property()
   shippingAddress!: string;
 
+  @ApiPropertyOptional({ example: 'Please call before delivery' })
   @Property({ nullable: true })
   notes?: string;
 
+  @ApiPropertyOptional({ example: 'VN123456789' })
   @Property({ nullable: true })
   trackingNumber?: string;
 
+  @ApiPropertyOptional({ example: 'Giao Hang Nhanh' })
   @Property({ nullable: true })
   courierName?: string;
 
+  @ApiPropertyOptional()
   @Property({ nullable: true })
   estimatedDeliveryDate?: Date;
 
+  @ApiPropertyOptional()
   @Property({ nullable: true })
   actualDeliveryDate?: Date;
 
