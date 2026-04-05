@@ -25,7 +25,8 @@
     "lint:check": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "typecheck": "tsc --noEmit",
     "test:quick": "jest --passWithNoTests --silent --maxWorkers=2",
-    "swagger:generate": "ts-node -r tsconfig-paths/register src/scripts/generate-swagger.ts"
+    "swagger:generate": "ts-node -r tsconfig-paths/register src/scripts/generate-swagger.ts",
+    "seed": "ts-node -r tsconfig-paths/register src/scripts/seed.ts"
   },
   "dependencies": {
     "@mikro-orm/core": "^6.5.5",
