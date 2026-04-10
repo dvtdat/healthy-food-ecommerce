@@ -930,6 +930,35 @@ paths:
       summary: Casso bank transfer webhook
       tags:
         - webhooks
+  /uploads/presign:
+    post:
+      description: Returns a short-lived PUT URL (5 min). The client PUTs the file directly to S3 using that URL, then stores the returned `fileUrl` on the resource.
+      operationId: UploadController_generatePresignedUrl
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeneratePresignDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  uploadUrl:
+                    type: string
+                    example: https://bucket.s3.ap-southeast-1.amazonaws.com/products/uuid.jpg?X-Amz-Signature=...
+                  fileUrl:
+                    type: string
+                    example: https://bucket.s3.ap-southeast-1.amazonaws.com/products/uuid.jpg
+      security:
+        - bearer: []
+      summary: Generate a presigned S3 URL for direct browser upload
+      tags:
+        - uploads
 info:
   title: Healthy Food E-Commerce API
   description: Healthy Food E-Commerce API description
@@ -1564,3 +1593,24 @@ components:
       required:
         - error
         - data
+    GeneratePresignDto:
+      type: object
+      properties:
+        folder:
+          type: string
+          enum:
+            - products
+            - categories
+            - users
+            - reviews
+          example: products
+        contentType:
+          type: string
+          example: image/jpeg
+          enum:
+            - image/jpeg
+            - image/png
+            - image/webp
+      required:
+        - folder
+        - contentType

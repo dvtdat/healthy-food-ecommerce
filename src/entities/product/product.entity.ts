@@ -29,6 +29,10 @@ export class Product extends BaseEntity {
   @Property({ nullable: true })
   imageUrl?: string;
 
+  @ApiProperty({ example: 42 })
+  @Property({ type: 'number', default: 0 })
+  viewCount = 0;
+
   @ApiProperty({ type: () => Category })
   @ManyToOne(() => Category)
   category!: Category;

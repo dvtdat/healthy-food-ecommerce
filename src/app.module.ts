@@ -11,6 +11,8 @@ import { OrderModule } from './modules/order/order.module';
 import { CartModule } from './modules/cart/cart.module';
 import { ReviewModule } from './modules/review/review.module';
 import { WebhookModule } from './modules/webhook/webhook.module';
+import { UploadModule } from './modules/upload/upload.module';
+import { AdminModule } from './modules/admin/admin.module';
 import { EncryptionService } from './common/services/encryption.service';
 import { EncryptionSubscriber } from './common/subscribers/encryption.subscriber';
 import { MikroORM } from '@mikro-orm/core';
@@ -25,6 +27,8 @@ import { MikroORM } from '@mikro-orm/core';
     CartModule,
     ReviewModule,
     WebhookModule,
+    UploadModule,
+    AdminModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),

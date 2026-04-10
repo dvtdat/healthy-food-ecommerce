@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseEnumPipe,
   ParseIntPipe,
   Patch,
   Post,
@@ -15,10 +16,11 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { ProductService } from './product.service';
+import { ProductService, ProductSortOption } from './product.service';
 import { CreateProductDto, UpdateProductDto } from './dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth/jwt-auth.guard';
 import { RoleGuard } from 'src/common/guards/role.guard';
@@ -41,7 +43,10 @@ export class ProductController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'List all products with optional category filter' })
+  @ApiOperation({
+    summary: 'List all products with optional category filter and sorting',
+  })
+  @ApiQuery({ name: 'sort', enum: ProductSortOption, required: false })
   @ApiOkResponse({
     schema: {
       properties: {
@@ -57,8 +62,10 @@ export class ProductController {
     @Query('pageSize', new ParseIntPipe({ optional: true })) pageSize = 10,
     @Query('pageNumber', new ParseIntPipe({ optional: true })) pageNumber = 1,
     @Query('categoryId') categoryId?: string,
+    @Query('sort', new ParseEnumPipe(ProductSortOption, { optional: true }))
+    sort: ProductSortOption = ProductSortOption.NEWEST,
   ) {
-    return this.productService.findAll(pageSize, pageNumber, categoryId);
+    return this.productService.findAll(pageSize, pageNumber, categoryId, sort);
   }
 
   @Get('slug/:slug')

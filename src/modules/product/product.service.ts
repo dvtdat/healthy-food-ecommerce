@@ -1,9 +1,21 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository, ObjectId } from '@mikro-orm/mongodb';
-import { wrap } from '@mikro-orm/core';
+import { QueryOrder, wrap } from '@mikro-orm/core';
 import { Category, Product, Review } from 'src/entities';
 import { CreateProductDto, UpdateProductDto } from './dto';
+
+export enum ProductSortOption {
+  NEWEST = 'newest',
+  PRICE_ASC = 'price_asc',
+  PRICE_DESC = 'price_desc',
+  TOP_RATED = 'top_rated',
+  MOST_VIEWED = 'most_viewed',
+}
 
 @Injectable()
 export class ProductService {
@@ -53,7 +65,7 @@ export class ProductService {
     });
 
     if (existing) {
-      throw new Error('Product with this slug already exists');
+      throw new ConflictException('Product with this slug already exists');
     }
 
     const category = await this.categoryRepository.findOne({
@@ -83,6 +95,7 @@ export class ProductService {
     pageSize = 10,
     pageNumber = 1,
     categoryId?: string,
+    sort: ProductSortOption = ProductSortOption.NEWEST,
   ): Promise<any> {
     const where: Record<string, unknown> = { deletedAt: null };
 
@@ -90,10 +103,49 @@ export class ProductService {
       where.category = new ObjectId(categoryId);
     }
 
+    // top_rated requires in-memory sort since averageRating is computed
+    if (sort === ProductSortOption.TOP_RATED) {
+      const allProducts = await this.productRepository.find(where, {
+        populate: ['category'],
+      });
+
+      const stats = await this.getReviewStats(allProducts.map((p) => p._id));
+
+      const sorted = allProducts
+        .map((p) => {
+          const { averageRating = 0, reviewCount = 0 } =
+            stats.get(p._id.toHexString()) ?? {};
+          return { ...wrap(p).toPOJO(), averageRating, reviewCount };
+        })
+        .sort((a, b) => b.averageRating - a.averageRating);
+
+      const total = sorted.length;
+      const data = sorted.slice(
+        (pageNumber - 1) * pageSize,
+        pageNumber * pageSize,
+      );
+
+      return {
+        data,
+        total,
+        pageSize,
+        pageNumber,
+        totalPages: Math.ceil(total / pageSize),
+      };
+    }
+
+    const orderByMap: Record<ProductSortOption, Record<string, QueryOrder>> = {
+      [ProductSortOption.NEWEST]: { createdAt: QueryOrder.DESC },
+      [ProductSortOption.PRICE_ASC]: { price: QueryOrder.ASC },
+      [ProductSortOption.PRICE_DESC]: { price: QueryOrder.DESC },
+      [ProductSortOption.MOST_VIEWED]: { viewCount: QueryOrder.DESC },
+      [ProductSortOption.TOP_RATED]: { createdAt: QueryOrder.DESC }, // unreachable, fallback
+    };
+
     const [products, total] = await this.productRepository.findAndCount(where, {
       limit: pageSize,
       offset: (pageNumber - 1) * pageSize,
-      orderBy: { createdAt: 'desc' },
+      orderBy: orderByMap[sort],
       populate: ['category'],
     });
 
@@ -123,6 +175,14 @@ export class ProductService {
     if (!product) {
       throw new NotFoundException('Product not found');
     }
+
+    product.viewCount += 1;
+    void this.productRepository
+      .getEntityManager()
+      .flush()
+      .catch(() => {
+        /* empty */
+      });
 
     const stats = await this.getReviewStats([product._id]);
     const { averageRating = 0, reviewCount = 0 } =
