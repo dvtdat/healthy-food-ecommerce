@@ -14,7 +14,11 @@ async function bootstrap() {
 
   const allowedOrigins = process.env.CORS_ORIGINS
     ? process.env.CORS_ORIGINS.split(',').map((o) => o.trim())
-    : ['http://localhost:3000', 'http://127.0.0.1:3000'];
+    : [
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
+        'https://d1ot1k67650chv.cloudfront.net/',
+      ];
 
   app.enableCors({
     origin: allowedOrigins,
