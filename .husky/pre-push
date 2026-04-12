@@ -1,2 +1,2 @@
 echo "🔍 Running pre-push checks..."
-yarn pre-push
+npm run pre-push
