@@ -430,6 +430,17 @@ paths:
           in: query
           schema:
             type: string
+        - name: sort
+          required: false
+          in: query
+          schema:
+            enum:
+              - newest
+              - price_asc
+              - price_desc
+              - top_rated
+              - most_viewed
+            type: string
       responses:
         '200':
           description: ''
@@ -449,7 +460,7 @@ paths:
                     type: number
                   totalPages:
                     type: number
-      summary: List all products with optional category filter
+      summary: List all products with optional category filter and sorting
       tags: *ref_3
   /products/slug/{slug}:
     get:
@@ -959,6 +970,25 @@ paths:
       summary: Generate a presigned S3 URL for direct browser upload
       tags:
         - uploads
+  /admin/stats:
+    get:
+      description: |-
+        Returns a single response containing:
+        - **orders**: byStatus counts, total revenue, avg order value, today/week/month counts, revenue-by-day chart data (last 30 days), last 10 orders
+        - **products**: total, out-of-stock count, low-stock list, top-5 by units sold, top-5 by revenue, top-5 by views
+        - **users**: total, new this week, new this month
+        - **reviews**: total count, global average rating
+        - **categories**: product count per category, revenue per category
+      operationId: AdminController_getStats
+      parameters: []
+      responses:
+        '200':
+          description: Aggregated dashboard stats
+      security:
+        - bearer: []
+      summary: Dashboard statistics (admin)
+      tags:
+        - admin
 info:
   title: Healthy Food E-Commerce API
   description: Healthy Food E-Commerce API description
@@ -1192,6 +1222,9 @@ components:
         imageUrl:
           type: string
           example: https://example.com/broccoli.jpg
+        viewCount:
+          type: object
+          example: 42
         category:
           $ref: '#/components/schemas/Category'
       required:
@@ -1202,6 +1235,7 @@ components:
         - slug
         - price
         - stock
+        - viewCount
         - category
     UpdateProductDto:
       type: object
