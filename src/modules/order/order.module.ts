@@ -10,6 +10,8 @@ import {
   Payment,
   Product,
   User,
+  Voucher,
+  VoucherUsage,
 } from 'src/entities';
 import { VietQRService } from 'src/common/services/vietqr.service';
 
@@ -23,6 +25,8 @@ import { VietQRService } from 'src/common/services/vietqr.service';
       Payment,
       Product,
       User,
+      Voucher,
+      VoucherUsage,
     ]),
   ],
   controllers: [OrderController],

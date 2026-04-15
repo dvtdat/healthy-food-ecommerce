@@ -14,6 +14,7 @@ import { BaseEntity } from '../base/base.entity';
 import { User } from '../user/user.entity';
 import { OrderItem } from './order-item.entity';
 import { Payment } from '../payment/payment.entity';
+import { DeliveryOption } from 'src/common/config/delivery.config';
 
 @Embeddable()
 export class StatusHistoryEntry {
@@ -68,6 +69,26 @@ export class Order extends BaseEntity {
   @Embedded(() => StatusHistoryEntry, { array: true })
   statusHistory: StatusHistoryEntry[] = [];
 
+  @ApiProperty({ enum: DeliveryOption, example: DeliveryOption.STANDARD })
+  @Enum(() => DeliveryOption)
+  deliveryOption!: DeliveryOption;
+
+  @ApiProperty({ example: 20000 })
+  @Property({ type: 'number' })
+  deliveryFee!: number;
+
+  @ApiProperty({ example: 130000 })
+  @Property({ type: 'number' })
+  subtotal!: number;
+
+  @ApiProperty({ example: 0 })
+  @Property({ type: 'number' })
+  discountAmount = 0;
+
+  @ApiPropertyOptional({ example: 'SUMMER10' })
+  @Property({ nullable: true })
+  voucherCode?: string;
+
   @ApiProperty({ example: 150000 })
   @Property({ type: 'number' })
   totalAmount!: number;
@@ -98,13 +119,22 @@ export class Order extends BaseEntity {
 
   constructor(
     user: User,
-    totalAmount: number,
+    subtotal: number,
+    deliveryOption: DeliveryOption,
+    deliveryFee: number,
     shippingAddress: string,
+    discountAmount = 0,
+    voucherCode?: string,
     notes?: string,
   ) {
     super();
     this.user = user;
-    this.totalAmount = totalAmount;
+    this.subtotal = subtotal;
+    this.deliveryOption = deliveryOption;
+    this.deliveryFee = deliveryFee;
+    this.discountAmount = discountAmount;
+    this.voucherCode = voucherCode;
+    this.totalAmount = subtotal + deliveryFee - discountAmount;
     this.shippingAddress = shippingAddress;
     this.notes = notes;
     this.statusHistory = [new StatusHistoryEntry(OrderStatus.PENDING)];

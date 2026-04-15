@@ -29,6 +29,30 @@ export class Product extends BaseEntity {
   @Property({ nullable: true })
   imageUrl?: string;
 
+  @ApiPropertyOptional({ example: ['High protein', 'Omega-3 rich', 'Low GI'] })
+  @Property({ nullable: true })
+  keyCharacteristics?: string[];
+
+  @ApiPropertyOptional({ example: 330 })
+  @Property({ type: 'number', nullable: true })
+  weight?: number;
+
+  @ApiPropertyOptional({ example: 'g' })
+  @Property({ nullable: true })
+  weightUnit?: string;
+
+  @ApiPropertyOptional({ example: 280 })
+  @Property({ type: 'number', nullable: true })
+  calories?: number;
+
+  @ApiPropertyOptional({ example: 8.8 })
+  @Property({ type: 'number', nullable: true })
+  healthScore?: number;
+
+  @ApiPropertyOptional({ example: '1 day (refrigerated)' })
+  @Property({ nullable: true })
+  shelfLife?: string;
+
   @ApiProperty({ example: 42 })
   @Property({ type: 'number', default: 0 })
   viewCount = 0;

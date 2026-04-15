@@ -542,6 +542,33 @@ paths:
         - bearer: []
       summary: Delete a product (admin)
       tags: *ref_3
+  /orders/delivery-options:
+    get:
+      operationId: OrderController_getDeliveryOptions
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  properties:
+                    label:
+                      type: string
+                    description:
+                      type: string
+                    estimatedDays:
+                      type: string
+                    fee:
+                      type: number
+      security: &ref_4
+        - bearer: []
+      summary: List available delivery options with fees
+      tags: &ref_5
+        - orders
   /orders:
     post:
       operationId: OrderController_create
@@ -559,11 +586,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Order'
-      security: &ref_4
-        - bearer: []
+      security: *ref_4
       summary: Create order from current cart
-      tags: &ref_5
-        - orders
+      tags: *ref_5
     get:
       operationId: OrderController_findAll
       parameters:
@@ -989,6 +1014,143 @@ paths:
       summary: Dashboard statistics (admin)
       tags:
         - admin
+  /vouchers:
+    post:
+      operationId: VoucherController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVoucherDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Voucher'
+      security:
+        - bearer: []
+      summary: Create voucher (admin)
+      tags: &ref_9
+        - vouchers
+    get:
+      operationId: VoucherController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Voucher'
+                  total:
+                    type: number
+                  pageSize:
+                    type: number
+                  pageNumber:
+                    type: number
+                  totalPages:
+                    type: number
+      security:
+        - bearer: []
+      summary: List all vouchers (admin)
+      tags: *ref_9
+  /vouchers/validate/{code}:
+    get:
+      operationId: VoucherController_validateVoucher
+      parameters:
+        - name: code
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: subtotal
+          required: true
+          in: query
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  code:
+                    type: string
+                  type:
+                    type: string
+                  value:
+                    type: number
+                  discountAmount:
+                    type: number
+                  minOrderAmount:
+                    type: number
+                    nullable: true
+                  maxDiscount:
+                    type: number
+                    nullable: true
+                  validTo:
+                    type: string
+                    format: date-time
+      security:
+        - bearer: []
+      summary: Validate voucher and preview discount (authenticated)
+      tags: *ref_9
+  /vouchers/{id}:
+    patch:
+      operationId: VoucherController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateVoucherDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Voucher'
+      security:
+        - bearer: []
+      summary: Update voucher (admin)
+      tags: *ref_9
+    delete:
+      operationId: VoucherController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+      security:
+        - bearer: []
+      summary: Soft delete voucher (admin)
+      tags: *ref_9
 info:
   title: Healthy Food E-Commerce API
   description: Healthy Food E-Commerce API description
@@ -1182,6 +1344,29 @@ components:
         imageUrl:
           type: string
           example: https://example.com/broccoli.jpg
+        keyCharacteristics:
+          example:
+            - High protein
+            - Omega-3 rich
+            - Low GI
+          type: array
+          items:
+            type: string
+        weight:
+          type: number
+          example: 330
+        weightUnit:
+          type: string
+          example: g
+        calories:
+          type: number
+          example: 280
+        healthScore:
+          type: number
+          example: 8.8
+        shelfLife:
+          type: string
+          example: 1 day (refrigerated)
         categoryId:
           type: string
           example: 507f1f77bcf86cd799439011
@@ -1222,6 +1407,29 @@ components:
         imageUrl:
           type: string
           example: https://example.com/broccoli.jpg
+        keyCharacteristics:
+          example:
+            - High protein
+            - Omega-3 rich
+            - Low GI
+          type: array
+          items:
+            type: string
+        weight:
+          type: number
+          example: 330
+        weightUnit:
+          type: string
+          example: g
+        calories:
+          type: number
+          example: 280
+        healthScore:
+          type: number
+          example: 8.8
+        shelfLife:
+          type: string
+          example: 1 day (refrigerated)
         viewCount:
           type: object
           example: 42
@@ -1260,6 +1468,29 @@ components:
         imageUrl:
           type: string
           example: https://example.com/broccoli.jpg
+        keyCharacteristics:
+          example:
+            - High protein
+            - Omega-3 rich
+            - Low GI
+          type: array
+          items:
+            type: string
+        weight:
+          type: number
+          example: 330
+        weightUnit:
+          type: string
+          example: g
+        calories:
+          type: number
+          example: 280
+        healthScore:
+          type: number
+          example: 8.8
+        shelfLife:
+          type: string
+          example: 1 day (refrigerated)
         categoryId:
           type: string
           example: 507f1f77bcf86cd799439011
@@ -1269,11 +1500,22 @@ components:
         shippingAddress:
           type: string
           example: 123 Nguyen Hue, District 1, HCMC
+        deliveryOption:
+          type: string
+          enum:
+            - standard
+            - fast
+            - urgent
+          example: standard
+        voucherCode:
+          type: string
+          example: SUMMER10
         notes:
           type: string
           example: Please call before delivery
       required:
         - shippingAddress
+        - deliveryOption
     OrderItem:
       type: object
       properties:
@@ -1392,6 +1634,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/StatusHistoryEntry'
+        deliveryOption:
+          type: string
+          enum:
+            - standard
+            - fast
+            - urgent
+          example: standard
+        deliveryFee:
+          type: number
+          example: 20000
+        subtotal:
+          type: number
+          example: 130000
+        discountAmount:
+          type: number
+          example: 0
+        voucherCode:
+          type: string
+          example: SUMMER10
         totalAmount:
           type: number
           example: 150000
@@ -1420,6 +1681,10 @@ components:
         - user
         - status
         - statusHistory
+        - deliveryOption
+        - deliveryFee
+        - subtotal
+        - discountAmount
         - totalAmount
         - shippingAddress
     UpdateOrderStatusDto:
@@ -1648,3 +1913,150 @@ components:
       required:
         - folder
         - contentType
+    CreateVoucherDto:
+      type: object
+      properties:
+        code:
+          type: string
+          example: SUMMER10
+        type:
+          type: string
+          enum: &ref_10
+            - percent
+            - fixed
+          example: percent
+        value:
+          type: number
+          example: 10
+          description: Percent value or fixed VND amount
+        minOrderAmount:
+          type: number
+          example: 100000
+        maxDiscount:
+          type: number
+          example: 50000
+          description: Max discount cap (percent type only)
+        usageLimit:
+          type: number
+          example: 100
+        perUserLimit:
+          type: number
+          example: 1
+          description: Max uses per user
+        validFrom:
+          type: string
+          example: '2026-04-15T00:00:00.000Z'
+        validTo:
+          type: string
+          example: '2026-12-31T23:59:59.000Z'
+        isActive:
+          type: boolean
+          example: true
+      required:
+        - code
+        - type
+        - value
+        - validFrom
+        - validTo
+    Voucher:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 507f1f77bcf86cd799439011
+        createdAt:
+          type: object
+        updatedAt:
+          type: object
+        deletedAt:
+          format: date-time
+          type: string
+        code:
+          type: string
+          example: SUMMER10
+        type:
+          type: string
+          enum:
+            - percent
+            - fixed
+          example: percent
+        value:
+          type: number
+          example: 10
+          description: Percent (10 = 10%) or fixed amount (VND)
+        minOrderAmount:
+          type: number
+          example: 100000
+          description: Min order subtotal to apply voucher
+        maxDiscount:
+          type: number
+          example: 50000
+          description: Max discount cap (for percent type)
+        usageLimit:
+          type: number
+          example: 100
+          description: Total usage limit across all users
+        usedCount:
+          type: number
+          example: 0
+        perUserLimit:
+          type: number
+          example: 1
+          description: Max times a single user can use this voucher
+        validFrom:
+          format: date-time
+          type: string
+        validTo:
+          format: date-time
+          type: string
+        isActive:
+          type: boolean
+          example: true
+      required:
+        - _id
+        - createdAt
+        - updatedAt
+        - code
+        - type
+        - value
+        - usedCount
+        - validFrom
+        - validTo
+        - isActive
+    UpdateVoucherDto:
+      type: object
+      properties:
+        code:
+          type: string
+          example: SUMMER10
+        type:
+          type: string
+          enum: *ref_10
+          example: percent
+        value:
+          type: number
+          example: 10
+          description: Percent value or fixed VND amount
+        minOrderAmount:
+          type: number
+          example: 100000
+        maxDiscount:
+          type: number
+          example: 50000
+          description: Max discount cap (percent type only)
+        usageLimit:
+          type: number
+          example: 100
+        perUserLimit:
+          type: number
+          example: 1
+          description: Max uses per user
+        validFrom:
+          type: string
+          example: '2026-04-15T00:00:00.000Z'
+        validTo:
+          type: string
+          example: '2026-12-31T23:59:59.000Z'
+        isActive:
+          type: boolean
+          example: true

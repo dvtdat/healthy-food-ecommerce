@@ -35,6 +35,26 @@ import {
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
+  @Get('delivery-options')
+  @ApiOperation({ summary: 'List available delivery options with fees' })
+  @ApiOkResponse({
+    schema: {
+      type: 'object',
+      additionalProperties: {
+        type: 'object',
+        properties: {
+          label: { type: 'string' },
+          description: { type: 'string' },
+          estimatedDays: { type: 'string' },
+          fee: { type: 'number' },
+        },
+      },
+    },
+  })
+  getDeliveryOptions() {
+    return this.orderService.getDeliveryOptions();
+  }
+
   @UseGuards(JwtAuthGuard)
   @Post()
   @ApiOperation({ summary: 'Create order from current cart' })

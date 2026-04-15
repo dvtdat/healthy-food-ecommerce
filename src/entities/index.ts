@@ -8,3 +8,5 @@ export * from './cart/cart.entity';
 export * from './cart/cart-item.entity';
 export * from './review/review.entity';
 export * from './payment/payment.entity';
+export * from './voucher/voucher.entity';
+export * from './voucher/voucher-usage.entity';
