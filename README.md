@@ -1,103 +1,91 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Healthy Food E-Commerce API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A modular, role-based e-commerce REST API built with NestJS + MikroORM + MongoDB.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Tech Stack
 
-## Description
+- **Framework:** NestJS 11, Express
+- **Language:** TypeScript 5.7
+- **ORM:** MikroORM 6.5 (MongoDB driver)
+- **Auth:** Passport.js (local, JWT, Google OAuth)
+- **Docs:** Swagger (`/api`)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Build Status
-
-![CI](https://github.com/dvtdat/reeldemy-be/workflows/CI/badge.svg)
-[![codecov](https://codecov.io/gh/dvtdat/reeldemy-be/branch/master/graph/badge.svg)](https://codecov.io/gh/dvtdat/reeldemy-be)
-
-## Project setup
+## Setup
 
 ```bash
-$ yarn install
+npm install
 ```
 
-## Compile and run the project
+## Running
 
 ```bash
-# development
-$ yarn run start
+# development (watch mode)
+npm run start:dev
 
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
+# production build
+npm run build
+npm run start:prod
 ```
 
-## Run tests
+## Testing
 
 ```bash
 # unit tests
-$ yarn run test
+npm run test
 
 # e2e tests
-$ yarn run test:e2e
+npm run test:e2e
 
-# test coverage
-$ yarn run test:cov
+# coverage
+npm run test:cov
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Other Commands
 
 ```bash
-$ yarn install -g @nestjs/mau
-$ mau deploy
+npm run lint             # fix ESLint issues
+npm run format           # fix formatting
+npm run typecheck        # TypeScript type check
+npm run pre-push         # lint + typecheck + build
+npm run swagger:generate # generate OpenAPI schema
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Swagger UI: `http://localhost:3300/api`
 
-## Resources
+## Environment Variables
 
-Check out a few resources that may come in handy when working with NestJS:
+| Variable                 | Required | Purpose                          |
+| ------------------------ | -------- | -------------------------------- |
+| `DATABASE_URL`           | Yes      | MongoDB connection string        |
+| `DATABASE_NAME`          | Yes      | Database name                    |
+| `JWT_SECRET`             | Yes      | JWT signing key                  |
+| `REFRESH_JWT_SECRET`     | Yes      | Refresh token signing key        |
+| `ENCRYPTION_KEY`         | Yes      | AES key for user name encryption |
+| `CASSO_SECURE_TOKEN`     | Yes      | Casso webhook signature token    |
+| `PORT`                   | No       | HTTP port (default: `3300`)      |
+| `JWT_EXPIRES_IN`         | No       | JWT expiry (default: `1h`)       |
+| `REFRESH_JWT_EXPIRES_IN` | No       | Refresh token expiry             |
+| `NGROK_AUTHTOKEN`        | No       | ngrok tunnel (dev only)          |
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## API Modules
 
-## Support
+- `POST /auth/login` — login → JWT + refresh token
+- `POST /auth/refresh` — refresh token
+- `POST /users` — register (public)
+- `GET /categories` — list categories (public)
+- `GET /products` — list products (public)
+- `POST /orders` — create order (authenticated)
+- `GET /carts/me` — get cart (authenticated)
+- `POST /reviews` — create review (authenticated)
+- `POST /webhooks/casso` — payment webhook
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+See `http://localhost:3300/api` for full Swagger docs.
 
-## Stay in touch
+## Payment Flow
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+1. User creates order → status `PENDING`
+2. User pays via bank transfer with memo: `THANHTOAN <orderId>`
+3. Casso webhook hits `POST /webhooks/casso`
+4. If amount matches and status is `PENDING` → status becomes `CONFIRMED`
 
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+**Order status flow:** `PENDING` → `CONFIRMED` → `SHIPPED` → `DELIVERED` / `CANCELLED`
