@@ -14,6 +14,7 @@ import { WebhookModule } from './modules/webhook/webhook.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { VoucherModule } from './modules/voucher/voucher.module';
+import { ChatbotModule } from './modules/chatbot/chatbot.module';
 import { EncryptionService } from './common/services/encryption.service';
 import { EncryptionSubscriber } from './common/subscribers/encryption.subscriber';
 import { MikroORM } from '@mikro-orm/core';
@@ -31,6 +32,7 @@ import { MikroORM } from '@mikro-orm/core';
     UploadModule,
     AdminModule,
     VoucherModule,
+    ChatbotModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),

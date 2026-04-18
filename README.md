@@ -66,6 +66,7 @@ Swagger UI: `http://localhost:3300/api`
 | `JWT_EXPIRES_IN`         | No       | JWT expiry (default: `1h`)       |
 | `REFRESH_JWT_EXPIRES_IN` | No       | Refresh token expiry             |
 | `NGROK_AUTHTOKEN`        | No       | ngrok tunnel (dev only)          |
+| `GEMINI_API_KEY`         | Yes      | Gemini API key (chatbot)         |
 
 ## API Modules
 
@@ -78,8 +79,44 @@ Swagger UI: `http://localhost:3300/api`
 - `GET /carts/me` — get cart (authenticated)
 - `POST /reviews` — create review (authenticated)
 - `POST /webhooks/casso` — payment webhook
+- `POST /chatbot` — AI chatbot (authenticated)
 
 See `http://localhost:3300/api` for full Swagger docs.
+
+## Chatbot
+
+The chatbot is powered by Gemini AI and acts as a shop assistant for HealthyFood.
+
+**Endpoint:** `POST /chatbot`  
+**Auth:** Bearer JWT required
+
+**Request body:**
+
+```json
+{ "message": "câu hỏi hoặc yêu cầu của bạn" }
+```
+
+**Response:**
+
+```json
+{ "reply": "câu trả lời từ AI" }
+```
+
+**Capabilities:**
+
+- Answer questions about products, prices, stock, categories
+- Recommend combos based on budget or nutritional needs
+- Show active vouchers and how to apply them
+- Explain delivery options and shipping fees
+- Add products to cart on behalf of the user (e.g. _"thêm Quinoa Power Bowl vào giỏ hàng"_)
+
+**Chat history:** Conversations are persisted per user in MongoDB (last 10 messages). Older messages are automatically trimmed.
+
+**Environment variable required:**
+
+| Variable         | Required | Purpose        |
+| ---------------- | -------- | -------------- |
+| `GEMINI_API_KEY` | Yes      | Gemini API key |
 
 ## Payment Flow
 
