@@ -1062,6 +1062,33 @@ paths:
         - bearer: []
       summary: List all vouchers (admin)
       tags: *ref_9
+  /vouchers/available:
+    get:
+      operationId: VoucherController_findAvailable
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Voucher'
+                  total:
+                    type: number
+                  pageSize:
+                    type: number
+                  pageNumber:
+                    type: number
+                  totalPages:
+                    type: number
+      security:
+        - bearer: []
+      summary: List available vouchers (authenticated)
+      tags: *ref_9
   /vouchers/validate/{code}:
     get:
       operationId: VoucherController_validateVoucher
@@ -1151,6 +1178,32 @@ paths:
         - bearer: []
       summary: Soft delete voucher (admin)
       tags: *ref_9
+  /chatbot:
+    post:
+      description: Send a message and get AI-powered responses about products, prices, vouchers, delivery, etc. History is stored per user (last 10 messages).
+      operationId: ChatbotController_chat
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatMessageDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  reply:
+                    type: string
+                    example: Hiện shop có 12 sản phẩm...
+      security:
+        - bearer: []
+      summary: Chat with AI assistant about the shop
+      tags:
+        - chatbot
 info:
   title: Healthy Food E-Commerce API
   description: Healthy Food E-Commerce API description
@@ -1648,7 +1701,7 @@ components:
           type: number
           example: 130000
         discountAmount:
-          type: number
+          type: object
           example: 0
         voucherCode:
           type: string
@@ -1997,7 +2050,7 @@ components:
           example: 100
           description: Total usage limit across all users
         usedCount:
-          type: number
+          type: object
           example: 0
         perUserLimit:
           type: number
@@ -2010,7 +2063,7 @@ components:
           format: date-time
           type: string
         isActive:
-          type: boolean
+          type: object
           example: true
       required:
         - _id
@@ -2060,3 +2113,11 @@ components:
         isActive:
           type: boolean
           example: true
+    ChatMessageDto:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Cho tôi xem các sản phẩm đang còn hàng
+      required:
+        - message

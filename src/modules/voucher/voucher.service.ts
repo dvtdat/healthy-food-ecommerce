@@ -69,6 +69,35 @@ export class VoucherService {
     };
   }
 
+  async findAvailable(pageSize = 10, pageNumber = 1) {
+    const now = new Date();
+    const [data, total] = await this.voucherRepository.findAndCount(
+      {
+        deletedAt: null,
+        isActive: true,
+        validFrom: { $lte: now },
+        validTo: { $gte: now },
+        $or: [
+          { usageLimit: null },
+          { $expr: { $lt: ['$usedCount', '$usageLimit'] } },
+        ],
+      } as any,
+      {
+        limit: pageSize,
+        offset: (pageNumber - 1) * pageSize,
+        orderBy: { validTo: 'asc' },
+      },
+    );
+
+    return {
+      data,
+      total,
+      pageSize,
+      pageNumber,
+      totalPages: Math.ceil(total / pageSize),
+    };
+  }
+
   async findById(id: string) {
     const voucher = await this.voucherRepository.findOne({
       _id: new ObjectId(id),

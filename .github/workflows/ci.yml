@@ -72,7 +72,7 @@ jobs:
         run: npm ci
 
       - name: Check formatting
-        run: npm run format -- --check
+        run: npx prettier --check "src/**/*.ts" "test/**/*.ts"
 
       - name: Run linter
         run: npm run lint

@@ -69,6 +69,28 @@ export class VoucherController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('available')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'List available vouchers (authenticated)' })
+  @ApiOkResponse({
+    schema: {
+      properties: {
+        data: { type: 'array', items: { $ref: getSchemaPath(Voucher) } },
+        total: { type: 'number' },
+        pageSize: { type: 'number' },
+        pageNumber: { type: 'number' },
+        totalPages: { type: 'number' },
+      },
+    },
+  })
+  findAvailable(
+    @Query('pageSize', new ParseIntPipe({ optional: true })) pageSize = 10,
+    @Query('pageNumber', new ParseIntPipe({ optional: true })) pageNumber = 1,
+  ) {
+    return this.voucherService.findAvailable(pageSize, pageNumber);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('validate/:code')
   @ApiBearerAuth()
   @ApiOperation({

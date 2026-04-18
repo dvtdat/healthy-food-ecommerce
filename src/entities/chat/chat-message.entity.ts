@@ -1,4 +1,4 @@
-import { Entity, Enum, Property } from '@mikro-orm/core';
+import { Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseEntity } from '../base/base.entity';
@@ -11,6 +11,7 @@ export enum ChatRole {
 @Entity()
 export class ChatMessage extends BaseEntity {
   @ApiProperty({ type: 'string', example: '507f1f77bcf86cd799439011' })
+  @Index()
   @Property()
   userId!: ObjectId;
 

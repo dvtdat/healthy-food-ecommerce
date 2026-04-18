@@ -1,8 +1,8 @@
+/* eslint-disable max-lines-per-function */
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository, ObjectId } from '@mikro-orm/mongodb';
-import { wrap } from '@mikro-orm/core';
 import {
   Product,
   Category,
@@ -53,7 +53,7 @@ export class ChatbotService {
     private readonly chatMessageRepository: EntityRepository<ChatMessage>,
   ) {
     this.geminiApiKey = this.configService.getOrThrow<string>('GEMINI_API_KEY');
-    this.geminiUrl = `https://aiplatform.googleapis.com/v1/publishers/google/models/gemini-2.5-flash-lite:generateContent?key=${this.geminiApiKey}`;
+    this.geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${this.geminiApiKey}`;
   }
 
   async chat(
@@ -83,10 +83,12 @@ Dưới đây là dữ liệu hiện tại của shop:
 
 ${shopContext}`;
 
-    const history = await this.chatMessageRepository.find(
-      { userId },
-      { orderBy: { createdAt: 'asc' }, limit: MAX_HISTORY },
-    );
+    const history = (
+      await this.chatMessageRepository.find(
+        { userId },
+        { orderBy: { createdAt: 'desc' }, limit: MAX_HISTORY },
+      )
+    ).reverse();
 
     const contents: { role: string; parts: { text: string }[] }[] = [];
     for (const msg of history) {
@@ -236,7 +238,6 @@ ${shopContext}`;
 
     if (products.length > 0) {
       const productLines = products.map((p) => {
-        const pojo = wrap(p).toPOJO();
         const pid = p._id.toHexString();
         const rv = reviewMap.get(pid);
         const avgRating = rv
@@ -248,7 +249,7 @@ ${shopContext}`;
         const status =
           p.stock > 0 ? `Còn hàng (${p.stock} sản phẩm)` : 'Hết hàng';
 
-        return `- ${p.name} (${(pojo as any).category?.name ?? 'N/A'})
+        return `- ${p.name} (${p.category?.name ?? 'N/A'})
     Giá: ${p.price.toLocaleString('vi-VN')}đ | Trạng thái: ${status}
     Trọng lượng: ${p.weight ?? 'N/A'}${p.weightUnit ?? ''} | Calories: ${p.calories ?? 'N/A'} | Health Score: ${p.healthScore ?? 'N/A'}/10
     Hạn sử dụng: ${p.shelfLife ?? 'N/A'}
