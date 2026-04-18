@@ -17,7 +17,8 @@ async function bootstrap() {
     : [
         'http://localhost:3000',
         'http://127.0.0.1:3000',
-        'https://d1ot1k67650chv.cloudfront.net/',
+        'https://d1ot1k67650chv.cloudfront.net',
+        'https://co3027.hcmut.dvtd.id.vn',
       ];
 
   app.enableCors({
