@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository, ObjectId } from '@mikro-orm/mongodb';
 import { Category } from 'src/entities';
@@ -17,7 +21,7 @@ export class CategoryService {
     });
 
     if (existing) {
-      throw new Error('Category with this slug already exists');
+      throw new ConflictException('Category with this slug already exists');
     }
 
     const category = new Category(

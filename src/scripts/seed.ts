@@ -959,6 +959,8 @@ const PRODUCTS: ProductSeed[] = [
 
 interface VoucherSeed {
   code: string;
+  name?: string;
+  description?: string;
   type: VoucherType;
   value: number;
   validFrom: Date;
@@ -967,6 +969,9 @@ interface VoucherSeed {
   maxDiscount?: number;
   usageLimit?: number;
   perUserLimit?: number;
+  firstOrderOnly?: boolean;
+  isClaimable?: boolean;
+  priority?: number;
 }
 
 const now = new Date();
@@ -1145,15 +1150,20 @@ async function seed() {
 
     const voucher = new Voucher(
       v.code,
+      v.name ?? v.code,
       v.type,
       v.value,
       v.validFrom,
       v.validTo,
       {
+        description: v.description,
         minOrderAmount: v.minOrderAmount,
         maxDiscount: v.maxDiscount,
         usageLimit: v.usageLimit,
         perUserLimit: v.perUserLimit,
+        firstOrderOnly: v.firstOrderOnly,
+        isClaimable: v.isClaimable,
+        priority: v.priority,
       },
     );
     em.persist(voucher);

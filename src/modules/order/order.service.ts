@@ -16,13 +16,12 @@ import {
   StatusHistoryEntry,
   User,
   UserRole,
-  Voucher,
-  VoucherType,
-  VoucherUsage,
+  Voucher as VoucherEntity,
 } from 'src/entities';
 import { CreateOrderDto, UpdateOrderStatusDto } from './dto';
 import { CurrentUserData } from 'src/common/decorators/current-user.decorator';
 import { VietQRService } from 'src/common/services/vietqr.service';
+import { VoucherService } from '../voucher/voucher.service';
 import {
   DELIVERY_OPTIONS,
   getDeliveryFee,
@@ -43,11 +42,8 @@ export class OrderService {
     private readonly cartRepository: EntityRepository<Cart>,
     @InjectRepository(CartItem)
     private readonly cartItemRepository: EntityRepository<CartItem>,
-    @InjectRepository(Voucher)
-    private readonly voucherRepository: EntityRepository<Voucher>,
-    @InjectRepository(VoucherUsage)
-    private readonly voucherUsageRepository: EntityRepository<VoucherUsage>,
     private readonly vietQRService: VietQRService,
+    private readonly voucherService: VoucherService,
   ) {}
 
   getDeliveryOptions() {
@@ -96,16 +92,24 @@ export class OrderService {
     const deliveryFee = getDeliveryFee(dto.deliveryOption);
 
     let discountAmount = 0;
-    let appliedVoucher: Voucher | null = null;
+    let appliedVoucher: VoucherEntity | null = null;
 
     if (dto.voucherCode) {
-      const voucherResult = await this.resolveVoucher(
+      const itemRefs = cartItems.map((it) => ({
+        productId: it.product._id.toString(),
+        categoryId: it.product.category?._id.toString(),
+        quantity: it.quantity,
+        price: it.product.price,
+      }));
+      const resolved = await this.voucherService.validateVoucher(
         dto.voucherCode,
-        subtotal,
         currentUser._id,
+        subtotal,
+        itemRefs,
+        deliveryFee,
       );
-      discountAmount = voucherResult.discountAmount;
-      appliedVoucher = voucherResult.voucher;
+      discountAmount = resolved.discountAmount;
+      appliedVoucher = resolved.voucher;
     }
 
     const em = this.orderRepository.getEntityManager();
@@ -135,74 +139,11 @@ export class OrderService {
     }
 
     if (appliedVoucher) {
-      appliedVoucher.usedCount += 1;
-      em.persist(appliedVoucher);
-      const usage = new VoucherUsage(appliedVoucher, user, order);
-      em.persist(usage);
+      await this.voucherService.applyVoucher(appliedVoucher, user, order);
     }
 
     await em.flush();
     return order;
-  }
-
-  private async resolveVoucher(
-    code: string,
-    subtotal: number,
-    userId: string,
-  ): Promise<{ voucher: Voucher; discountAmount: number }> {
-    const voucher = await this.voucherRepository.findOne({
-      code: code.toUpperCase(),
-      deletedAt: null,
-    });
-
-    if (!voucher) throw new BadRequestException('Voucher not found');
-    if (!voucher.isActive) throw new BadRequestException('Voucher is inactive');
-
-    const now = new Date();
-    if (now < voucher.validFrom || now > voucher.validTo) {
-      throw new BadRequestException('Voucher has expired or is not yet valid');
-    }
-
-    if (
-      voucher.usageLimit !== undefined &&
-      voucher.usedCount >= voucher.usageLimit
-    ) {
-      throw new BadRequestException('Voucher usage limit reached');
-    }
-
-    if (
-      voucher.minOrderAmount !== undefined &&
-      subtotal < voucher.minOrderAmount
-    ) {
-      throw new BadRequestException(
-        `Minimum order amount of ${voucher.minOrderAmount} required for this voucher`,
-      );
-    }
-
-    if (voucher.perUserLimit !== undefined) {
-      const userUsageCount = await this.voucherUsageRepository.count({
-        voucher: voucher._id,
-        user: new ObjectId(userId),
-      });
-      if (userUsageCount >= voucher.perUserLimit) {
-        throw new BadRequestException(
-          'You have already used this voucher the maximum number of times',
-        );
-      }
-    }
-
-    const discountAmount = this.calcDiscount(voucher, subtotal);
-    return { voucher, discountAmount };
-  }
-
-  private calcDiscount(voucher: Voucher, subtotal: number): number {
-    if (voucher.type === VoucherType.FIXED) {
-      return Math.min(voucher.value, subtotal);
-    }
-    const raw = Math.floor((subtotal * voucher.value) / 100);
-    return voucher.maxDiscount !== undefined
-      ? Math.min(raw, voucher.maxDiscount)
-      : raw;
   }
 
   async findAll(

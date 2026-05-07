@@ -23,10 +23,20 @@ export class ChatMessage extends BaseEntity {
   @Property({ type: 'string' })
   text!: string;
 
-  constructor(userId: ObjectId, role: ChatRole, text: string) {
+  @ApiProperty({ example: false })
+  @Property({ default: false })
+  isImportant = false;
+
+  constructor(
+    userId: ObjectId,
+    role: ChatRole,
+    text: string,
+    isImportant = false,
+  ) {
     super();
     this.userId = userId;
     this.role = role;
     this.text = text;
+    this.isImportant = isImportant;
   }
 }

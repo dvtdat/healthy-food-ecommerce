@@ -1,6 +1,7 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module, OnModuleInit } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ThrottlerModule } from '@nestjs/throttler';
 import config from '../mikro-orm.config';
 import { RoleGuard } from './common/guards/role.guard';
 import { AuthModule } from './modules/auth/auth.module';
@@ -36,6 +37,7 @@ import { MikroORM } from '@mikro-orm/core';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ThrottlerModule.forRoot([{ ttl: 60000, limit: 20 }]),
     MikroOrmModule.forRoot(config),
   ],
   controllers: [],

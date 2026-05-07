@@ -10,10 +10,9 @@ import {
   Payment,
   Product,
   User,
-  Voucher,
-  VoucherUsage,
 } from 'src/entities';
 import { VietQRService } from 'src/common/services/vietqr.service';
+import { VoucherModule } from '../voucher/voucher.module';
 
 @Module({
   imports: [
@@ -25,9 +24,8 @@ import { VietQRService } from 'src/common/services/vietqr.service';
       Payment,
       Product,
       User,
-      Voucher,
-      VoucherUsage,
     ]),
+    VoucherModule,
   ],
   controllers: [OrderController],
   providers: [OrderService, VietQRService],

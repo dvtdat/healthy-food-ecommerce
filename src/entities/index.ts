@@ -10,4 +10,5 @@ export * from './review/review.entity';
 export * from './payment/payment.entity';
 export * from './voucher/voucher.entity';
 export * from './voucher/voucher-usage.entity';
+export * from './voucher/voucher-claim.entity';
 export * from './chat/chat-message.entity';
