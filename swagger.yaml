@@ -1481,6 +1481,9 @@ components:
         _id:
           type: string
           example: 507f1f77bcf86cd799439011
+        id:
+          type: string
+          example: 507f1f77bcf86cd799439011
         createdAt:
           type: object
         updatedAt:
@@ -1509,6 +1512,7 @@ components:
           example: true
       required:
         - _id
+        - id
         - createdAt
         - updatedAt
         - email
@@ -1570,6 +1574,9 @@ components:
         _id:
           type: string
           example: 507f1f77bcf86cd799439011
+        id:
+          type: string
+          example: 507f1f77bcf86cd799439011
         createdAt:
           type: object
         updatedAt:
@@ -1591,6 +1598,7 @@ components:
           example: https://example.com/image.jpg
       required:
         - _id
+        - id
         - createdAt
         - updatedAt
         - name
@@ -1671,6 +1679,9 @@ components:
         _id:
           type: string
           example: 507f1f77bcf86cd799439011
+        id:
+          type: string
+          example: 507f1f77bcf86cd799439011
         createdAt:
           type: object
         updatedAt:
@@ -1726,6 +1737,7 @@ components:
           $ref: '#/components/schemas/Category'
       required:
         - _id
+        - id
         - createdAt
         - updatedAt
         - name
@@ -1811,6 +1823,9 @@ components:
         _id:
           type: string
           example: 507f1f77bcf86cd799439011
+        id:
+          type: string
+          example: 507f1f77bcf86cd799439011
         createdAt:
           type: object
         updatedAt:
@@ -1828,6 +1843,7 @@ components:
           example: 29000
       required:
         - _id
+        - id
         - createdAt
         - updatedAt
         - product
@@ -1837,6 +1853,9 @@ components:
       type: object
       properties:
         _id:
+          type: string
+          example: 507f1f77bcf86cd799439011
+        id:
           type: string
           example: 507f1f77bcf86cd799439011
         createdAt:
@@ -1869,6 +1888,7 @@ components:
           type: string
       required:
         - _id
+        - id
         - createdAt
         - updatedAt
         - cassoTransactionId
@@ -1893,6 +1913,9 @@ components:
       type: object
       properties:
         _id:
+          type: string
+          example: 507f1f77bcf86cd799439011
+        id:
           type: string
           example: 507f1f77bcf86cd799439011
         createdAt:
@@ -1965,6 +1988,7 @@ components:
           type: string
       required:
         - _id
+        - id
         - createdAt
         - updatedAt
         - user
@@ -2086,6 +2110,9 @@ components:
         _id:
           type: string
           example: 507f1f77bcf86cd799439011
+        id:
+          type: string
+          example: 507f1f77bcf86cd799439011
         createdAt:
           type: object
         updatedAt:
@@ -2174,6 +2201,7 @@ components:
           example: true
       required:
         - _id
+        - id
         - createdAt
         - updatedAt
         - code
@@ -2309,6 +2337,9 @@ components:
         _id:
           type: string
           example: 507f1f77bcf86cd799439011
+        id:
+          type: string
+          example: 507f1f77bcf86cd799439011
         createdAt:
           type: object
         updatedAt:
@@ -2323,6 +2354,7 @@ components:
           example: 2
       required:
         - _id
+        - id
         - createdAt
         - updatedAt
         - product
@@ -2331,6 +2363,9 @@ components:
       type: object
       properties:
         _id:
+          type: string
+          example: 507f1f77bcf86cd799439011
+        id:
           type: string
           example: 507f1f77bcf86cd799439011
         createdAt:
@@ -2348,6 +2383,7 @@ components:
             $ref: '#/components/schemas/CartItem'
       required:
         - _id
+        - id
         - createdAt
         - updatedAt
         - user
@@ -2396,6 +2432,9 @@ components:
         _id:
           type: string
           example: 507f1f77bcf86cd799439011
+        id:
+          type: string
+          example: 507f1f77bcf86cd799439011
         createdAt:
           type: object
         updatedAt:
@@ -2417,6 +2456,7 @@ components:
           example: Great product!
       required:
         - _id
+        - id
         - createdAt
         - updatedAt
         - user

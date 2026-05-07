@@ -1,4 +1,9 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
+import {
+  Entity,
+  PrimaryKey,
+  Property,
+  SerializedPrimaryKey,
+} from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -7,6 +12,12 @@ export abstract class BaseEntity {
   @ApiProperty({ type: 'string', example: '507f1f77bcf86cd799439011' })
   @PrimaryKey()
   _id!: ObjectId;
+
+  // MikroORM-managed string mirror of _id. Populated automatically on load
+  // and serialized into JSON responses, so FE clients can rely on `.id`.
+  @ApiProperty({ type: 'string', example: '507f1f77bcf86cd799439011' })
+  @SerializedPrimaryKey()
+  id!: string;
 
   @ApiProperty()
   @Property({ type: 'timestamptz', defaultRaw: 'current_timestamp' })
