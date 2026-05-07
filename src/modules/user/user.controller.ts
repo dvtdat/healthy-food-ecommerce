@@ -108,11 +108,14 @@ export class UserController {
     return this.userService.findUserOrders(id, pageSize, pageNumber);
   }
 
+  @Roles(UserRole.ADMIN)
+  @UseGuards(JwtAuthGuard, RoleGuard)
   @Get('email/:email')
-  @ApiOperation({ summary: 'Get user by email' })
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get user by email (admin)' })
   @ApiOkResponse({ type: User })
   findByEmail(@Param('email') email: string) {
-    return this.userService.findByEmail(email);
+    return this.userService.findByEmailPublic(email);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -141,10 +144,11 @@ export class UserController {
     return this.userService.updateStatus(id, updateUserStatusDto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Roles(UserRole.ADMIN)
+  @UseGuards(JwtAuthGuard, RoleGuard)
   @Delete(':id')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Soft delete a user' })
+  @ApiOperation({ summary: 'Soft delete a user (admin)' })
   @ApiOkResponse({ type: User })
   remove(@Param('id') id: string) {
     return this.userService.remove(id);

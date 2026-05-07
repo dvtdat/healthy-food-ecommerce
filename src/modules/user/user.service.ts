@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -28,7 +29,7 @@ export class UserService {
     });
 
     if (existingUser) {
-      throw new Error('User with this email already exists');
+      throw new ConflictException('User with this email already exists');
     }
 
     const hashedPassword = await utils.hashPassword(createUserDto.password);
@@ -127,6 +128,17 @@ export class UserService {
     return user;
   }
 
+  async findByEmailPublic(email: string) {
+    const user = await this.findByEmail(email);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const { password: _password, ...safe } = user as User & {
+      password?: string;
+    };
+    return safe;
+  }
+
   async findById(id: string) {
     const user = await this.userRepository.findOne({
       _id: new ObjectId(id),
@@ -212,7 +224,7 @@ export class UserService {
     });
 
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
     user.deletedAt = new Date();

@@ -123,7 +123,7 @@ paths:
                 $ref: '#/components/schemas/User'
       security:
         - bearer: []
-      summary: Soft delete a user
+      summary: Soft delete a user (admin)
       tags: *ref_0
   /users/{id}/orders:
     get:
@@ -173,7 +173,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-      summary: Get user by email
+      security:
+        - bearer: []
+      summary: Get user by email (admin)
       tags: *ref_0
   /users/{id}/status:
     patch:
@@ -749,6 +751,358 @@ paths:
       security: *ref_4
       summary: Update order status (admin)
       tags: *ref_5
+  /vouchers:
+    post:
+      operationId: VoucherController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVoucherDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Voucher'
+      security:
+        - bearer: []
+      summary: Create voucher (admin)
+      tags: &ref_6
+        - vouchers
+    get:
+      operationId: VoucherController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Voucher'
+                  total:
+                    type: number
+                  pageSize:
+                    type: number
+                  pageNumber:
+                    type: number
+                  totalPages:
+                    type: number
+      security:
+        - bearer: []
+      summary: List all vouchers (admin)
+      tags: *ref_6
+  /vouchers/{id}:
+    patch:
+      operationId: VoucherController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateVoucherDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Voucher'
+      security:
+        - bearer: []
+      summary: Update voucher (admin)
+      tags: *ref_6
+    delete:
+      operationId: VoucherController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+      security:
+        - bearer: []
+      summary: Soft delete voucher (admin)
+      tags: *ref_6
+  /vouchers/{id}/pause:
+    patch:
+      operationId: VoucherController_pause
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PauseVoucherDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Voucher'
+      security:
+        - bearer: []
+      summary: Pause/resume voucher (admin)
+      tags: *ref_6
+  /vouchers/{id}/duplicate:
+    post:
+      operationId: VoucherController_duplicate
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Voucher'
+      security:
+        - bearer: []
+      summary: Duplicate voucher (admin) — copy is paused
+      tags: *ref_6
+  /vouchers/available:
+    get:
+      operationId: VoucherController_findAvailable
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Voucher'
+                  total:
+                    type: number
+                  pageSize:
+                    type: number
+                  pageNumber:
+                    type: number
+                  totalPages:
+                    type: number
+      security:
+        - bearer: []
+      summary: List broadcast (non-claimable) active vouchers
+      tags: *ref_6
+  /vouchers/claimable:
+    get:
+      operationId: VoucherController_findClaimable
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - $ref: '#/components/schemas/Voucher'
+                    - properties:
+                        alreadyClaimed:
+                          type: boolean
+      security:
+        - bearer: []
+      summary: Browse claimable vouchers
+      tags: *ref_6
+  /vouchers/claim:
+    post:
+      operationId: VoucherController_claim
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClaimVoucherDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                  voucher:
+                    $ref: '#/components/schemas/Voucher'
+      security:
+        - bearer: []
+      summary: Claim a voucher into my wallet
+      tags: *ref_6
+  /vouchers/me:
+    get:
+      operationId: VoucherController_findMine
+      parameters:
+        - name: filter
+          required: false
+          in: query
+          schema:
+            enum:
+              - all
+              - usable
+              - used
+              - expired
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    claim:
+                      properties:
+                        _id:
+                          type: string
+                        claimedAt:
+                          type: string
+                          format: date-time
+                        usedAt:
+                          type: string
+                          format: date-time
+                          nullable: true
+                    voucher:
+                      $ref: '#/components/schemas/Voucher'
+                    status:
+                      type: string
+      security:
+        - bearer: []
+      summary: My voucher wallet
+      tags: *ref_6
+  /vouchers/preview/{code}:
+    get:
+      operationId: VoucherController_preview
+      parameters:
+        - name: code
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: subtotal
+          required: true
+          in: query
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+      summary: Public preview — marketing display only
+      tags: *ref_6
+  /vouchers/validate/{code}:
+    get:
+      operationId: VoucherController_validateVoucher
+      parameters:
+        - name: code
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: subtotal
+          required: true
+          in: query
+          schema:
+            type: number
+        - name: deliveryFee
+          required: false
+          in: query
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  eligible:
+                    type: boolean
+                  discountAmount:
+                    type: number
+                  freeShippingApplied:
+                    type: boolean
+                  voucher:
+                    $ref: '#/components/schemas/Voucher'
+                  ineligibility:
+                    properties:
+                      reason:
+                        type: string
+                      code:
+                        type: string
+      security:
+        - bearer: []
+      summary: Validate voucher with full eligibility checks
+      tags: *ref_6
+  /vouchers/suggest:
+    post:
+      operationId: VoucherController_suggestBest
+      parameters:
+        - name: deliveryFee
+          required: false
+          in: query
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SuggestVoucherDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                nullable: true
+                properties:
+                  voucher:
+                    $ref: '#/components/schemas/Voucher'
+                  discountAmount:
+                    type: number
+                  freeShippingApplied:
+                    type: boolean
+      security:
+        - bearer: []
+      summary: Suggest the best voucher for a cart
+      tags: *ref_6
   /carts/me:
     get:
       operationId: CartController_getCart
@@ -760,10 +1114,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Cart'
-      security: &ref_6
+      security: &ref_7
         - bearer: []
       summary: Get or create the current user cart
-      tags: &ref_7
+      tags: &ref_8
         - carts
   /carts/items:
     post:
@@ -782,9 +1136,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Cart'
-      security: *ref_6
+      security: *ref_7
       summary: Add item to cart (increments if already exists)
-      tags: *ref_7
+      tags: *ref_8
   /carts/items/{productId}:
     patch:
       operationId: CartController_updateItem
@@ -807,9 +1161,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Cart'
-      security: *ref_6
+      security: *ref_7
       summary: Update cart item quantity
-      tags: *ref_7
+      tags: *ref_8
     delete:
       operationId: CartController_removeItem
       parameters:
@@ -825,9 +1179,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Cart'
-      security: *ref_6
+      security: *ref_7
       summary: Remove a product from cart
-      tags: *ref_7
+      tags: *ref_8
   /carts:
     delete:
       operationId: CartController_clearCart
@@ -839,9 +1193,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Cart'
-      security: *ref_6
+      security: *ref_7
       summary: Clear all items from cart
-      tags: *ref_7
+      tags: *ref_8
   /reviews:
     post:
       operationId: ReviewController_create
@@ -862,7 +1216,7 @@ paths:
       security:
         - bearer: []
       summary: Create a review (one per user per product)
-      tags: &ref_8
+      tags: &ref_9
         - reviews
     get:
       operationId: ReviewController_findByProduct
@@ -892,7 +1246,7 @@ paths:
                   totalPages:
                     type: number
       summary: List reviews for a product
-      tags: *ref_8
+      tags: *ref_9
   /reviews/{id}:
     patch:
       operationId: ReviewController_update
@@ -918,7 +1272,7 @@ paths:
       security:
         - bearer: []
       summary: Update your review
-      tags: *ref_8
+      tags: *ref_9
     delete:
       operationId: ReviewController_remove
       parameters:
@@ -937,7 +1291,7 @@ paths:
       security:
         - bearer: []
       summary: Delete your review
-      tags: *ref_8
+      tags: *ref_9
   /webhooks/casso:
     post:
       operationId: WebhookController_handleCasso
@@ -1014,170 +1368,6 @@ paths:
       summary: Dashboard statistics (admin)
       tags:
         - admin
-  /vouchers:
-    post:
-      operationId: VoucherController_create
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateVoucherDto'
-      responses:
-        '201':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Voucher'
-      security:
-        - bearer: []
-      summary: Create voucher (admin)
-      tags: &ref_9
-        - vouchers
-    get:
-      operationId: VoucherController_findAll
-      parameters: []
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Voucher'
-                  total:
-                    type: number
-                  pageSize:
-                    type: number
-                  pageNumber:
-                    type: number
-                  totalPages:
-                    type: number
-      security:
-        - bearer: []
-      summary: List all vouchers (admin)
-      tags: *ref_9
-  /vouchers/available:
-    get:
-      operationId: VoucherController_findAvailable
-      parameters: []
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Voucher'
-                  total:
-                    type: number
-                  pageSize:
-                    type: number
-                  pageNumber:
-                    type: number
-                  totalPages:
-                    type: number
-      security:
-        - bearer: []
-      summary: List available vouchers (authenticated)
-      tags: *ref_9
-  /vouchers/validate/{code}:
-    get:
-      operationId: VoucherController_validateVoucher
-      parameters:
-        - name: code
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: subtotal
-          required: true
-          in: query
-          schema:
-            type: number
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                properties:
-                  code:
-                    type: string
-                  type:
-                    type: string
-                  value:
-                    type: number
-                  discountAmount:
-                    type: number
-                  minOrderAmount:
-                    type: number
-                    nullable: true
-                  maxDiscount:
-                    type: number
-                    nullable: true
-                  validTo:
-                    type: string
-                    format: date-time
-      security:
-        - bearer: []
-      summary: Validate voucher and preview discount (authenticated)
-      tags: *ref_9
-  /vouchers/{id}:
-    patch:
-      operationId: VoucherController_update
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateVoucherDto'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Voucher'
-      security:
-        - bearer: []
-      summary: Update voucher (admin)
-      tags: *ref_9
-    delete:
-      operationId: VoucherController_remove
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                properties:
-                  message:
-                    type: string
-      security:
-        - bearer: []
-      summary: Soft delete voucher (admin)
-      tags: *ref_9
   /chatbot:
     post:
       description: Send a message and get AI-powered responses about products, prices, vouchers, delivery, etc. History is stored per user (last 10 messages).
@@ -1199,11 +1389,57 @@ paths:
                   reply:
                     type: string
                     example: Hiện shop có 12 sản phẩm...
+                  cartChanged:
+                    type: boolean
+                    example: false
+                  action:
+                    type: string
+                    example: add_to_cart
+                    nullable: true
       security:
         - bearer: []
       summary: Chat with AI assistant about the shop
-      tags:
+      tags: &ref_10
         - chatbot
+  /chatbot/messages:
+    get:
+      description: Returns the last 10 messages (oldest first) for the authenticated user.
+      operationId: ChatbotController_getHistory
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    role:
+                      type: string
+                      enum:
+                        - user
+                        - model
+                    text:
+                      type: string
+                    createdAt:
+                      type: string
+                      format: date-time
+      security:
+        - bearer: []
+      summary: Get current user chat history
+      tags: *ref_10
+    delete:
+      operationId: ChatbotController_clearHistory
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      security:
+        - bearer: []
+      summary: Clear current user chat history
+      tags: *ref_10
 info:
   title: Healthy Food E-Commerce API
   description: Healthy Food E-Commerce API description
@@ -1766,6 +2002,307 @@ components:
           example: Order confirmed and ready to ship
       required:
         - status
+    CreateVoucherDto:
+      type: object
+      properties:
+        code:
+          type: string
+          example: SUMMER10
+        name:
+          type: string
+          example: Summer Flash Sale
+        description:
+          type: string
+          example: Get 10% off everything in our summer collection.
+        bannerImage:
+          type: string
+        type:
+          type: string
+          enum: &ref_11
+            - percent
+            - fixed
+            - free_shipping
+          example: percent
+        value:
+          type: number
+          example: 10
+          description: Percent value, fixed VND, or 0 for FREE_SHIPPING
+        minOrderAmount:
+          type: number
+          example: 100000
+        maxDiscount:
+          type: number
+          example: 50000
+          description: Max discount cap (percent only)
+        usageLimit:
+          type: number
+          example: 100
+        perUserLimit:
+          type: number
+          example: 1
+        firstOrderOnly:
+          type: boolean
+          example: false
+        applicableProductIds:
+          type: array
+          items:
+            type: string
+        applicableCategoryIds:
+          type: array
+          items:
+            type: string
+        excludedProductIds:
+          type: array
+          items:
+            type: string
+        priority:
+          type: number
+          example: 0
+        isClaimable:
+          type: boolean
+          example: false
+        isStackableWithShipping:
+          type: boolean
+          example: true
+        validFrom:
+          type: string
+          example: '2026-04-15T00:00:00.000Z'
+        validTo:
+          type: string
+          example: '2026-12-31T23:59:59.000Z'
+        isActive:
+          type: boolean
+          example: true
+      required:
+        - code
+        - name
+        - type
+        - value
+        - validFrom
+        - validTo
+    Voucher:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 507f1f77bcf86cd799439011
+        createdAt:
+          type: object
+        updatedAt:
+          type: object
+        deletedAt:
+          format: date-time
+          type: string
+        code:
+          type: string
+          example: SUMMER10
+        name:
+          type: string
+          example: Summer Flash Sale
+        description:
+          type: string
+          example: Get 10% off everything in our summer collection.
+        bannerImage:
+          type: string
+          example: https://cdn.example.com/banner.jpg
+        type:
+          type: string
+          enum:
+            - percent
+            - fixed
+            - free_shipping
+          example: percent
+        value:
+          type: object
+          example: 10
+          description: Percent (10 = 10%), fixed VND amount, or 0 for FREE_SHIPPING (uses deliveryFee).
+        minOrderAmount:
+          type: number
+          example: 100000
+          description: Min order subtotal
+        maxDiscount:
+          type: number
+          example: 50000
+          description: Max discount cap (percent only)
+        usageLimit:
+          type: number
+          example: 100
+          description: Total usage cap across all users
+        usedCount:
+          type: object
+          example: 0
+        perUserLimit:
+          type: number
+          example: 1
+          description: Max uses per user
+        firstOrderOnly:
+          type: object
+          example: false
+        applicableProductIds:
+          description: Restrict to these product IDs. Empty = all products.
+          type: array
+          items:
+            type: string
+        applicableCategoryIds:
+          description: Restrict to these category IDs. Empty = all categories.
+          type: array
+          items:
+            type: string
+        excludedProductIds:
+          type: array
+          items:
+            type: string
+        priority:
+          type: object
+          example: 0
+          description: Higher = preferred when auto-suggesting best voucher
+        isClaimable:
+          type: object
+          example: false
+          description: If true, user must claim before use. If false, anyone can apply by code.
+        isStackableWithShipping:
+          type: object
+          example: true
+        validFrom:
+          format: date-time
+          type: string
+        validTo:
+          format: date-time
+          type: string
+        isActive:
+          type: object
+          example: true
+      required:
+        - _id
+        - createdAt
+        - updatedAt
+        - code
+        - name
+        - type
+        - value
+        - usedCount
+        - firstOrderOnly
+        - priority
+        - isClaimable
+        - isStackableWithShipping
+        - validFrom
+        - validTo
+        - isActive
+    UpdateVoucherDto:
+      type: object
+      properties:
+        code:
+          type: string
+          example: SUMMER10
+        name:
+          type: string
+          example: Summer Flash Sale
+        description:
+          type: string
+          example: Get 10% off everything in our summer collection.
+        bannerImage:
+          type: string
+        type:
+          type: string
+          enum: *ref_11
+          example: percent
+        value:
+          type: number
+          example: 10
+          description: Percent value, fixed VND, or 0 for FREE_SHIPPING
+        minOrderAmount:
+          type: number
+          example: 100000
+        maxDiscount:
+          type: number
+          example: 50000
+          description: Max discount cap (percent only)
+        usageLimit:
+          type: number
+          example: 100
+        perUserLimit:
+          type: number
+          example: 1
+        firstOrderOnly:
+          type: boolean
+          example: false
+        applicableProductIds:
+          type: array
+          items:
+            type: string
+        applicableCategoryIds:
+          type: array
+          items:
+            type: string
+        excludedProductIds:
+          type: array
+          items:
+            type: string
+        priority:
+          type: number
+          example: 0
+        isClaimable:
+          type: boolean
+          example: false
+        isStackableWithShipping:
+          type: boolean
+          example: true
+        validFrom:
+          type: string
+          example: '2026-04-15T00:00:00.000Z'
+        validTo:
+          type: string
+          example: '2026-12-31T23:59:59.000Z'
+        isActive:
+          type: boolean
+          example: true
+    PauseVoucherDto:
+      type: object
+      properties:
+        paused:
+          type: boolean
+          example: true
+      required:
+        - paused
+    ClaimVoucherDto:
+      type: object
+      properties:
+        code:
+          type: string
+          example: SUMMER10
+      required:
+        - code
+    CartItemRefDto:
+      type: object
+      properties:
+        productId:
+          type: string
+          example: 67d3f0a1b2c3d4e5f6789012
+        categoryId:
+          type: string
+          example: 67c1a2b3c4d5e6f789012345
+        quantity:
+          type: number
+          example: 2
+        price:
+          type: number
+          example: 50000
+      required:
+        - productId
+        - quantity
+        - price
+    SuggestVoucherDto:
+      type: object
+      properties:
+        subtotal:
+          type: number
+          example: 200000
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItemRefDto'
+      required:
+        - subtotal
     CartItem:
       type: object
       properties:
@@ -1966,158 +2503,18 @@ components:
       required:
         - folder
         - contentType
-    CreateVoucherDto:
-      type: object
-      properties:
-        code:
-          type: string
-          example: SUMMER10
-        type:
-          type: string
-          enum: &ref_10
-            - percent
-            - fixed
-          example: percent
-        value:
-          type: number
-          example: 10
-          description: Percent value or fixed VND amount
-        minOrderAmount:
-          type: number
-          example: 100000
-        maxDiscount:
-          type: number
-          example: 50000
-          description: Max discount cap (percent type only)
-        usageLimit:
-          type: number
-          example: 100
-        perUserLimit:
-          type: number
-          example: 1
-          description: Max uses per user
-        validFrom:
-          type: string
-          example: '2026-04-15T00:00:00.000Z'
-        validTo:
-          type: string
-          example: '2026-12-31T23:59:59.000Z'
-        isActive:
-          type: boolean
-          example: true
-      required:
-        - code
-        - type
-        - value
-        - validFrom
-        - validTo
-    Voucher:
-      type: object
-      properties:
-        _id:
-          type: string
-          example: 507f1f77bcf86cd799439011
-        createdAt:
-          type: object
-        updatedAt:
-          type: object
-        deletedAt:
-          format: date-time
-          type: string
-        code:
-          type: string
-          example: SUMMER10
-        type:
-          type: string
-          enum:
-            - percent
-            - fixed
-          example: percent
-        value:
-          type: number
-          example: 10
-          description: Percent (10 = 10%) or fixed amount (VND)
-        minOrderAmount:
-          type: number
-          example: 100000
-          description: Min order subtotal to apply voucher
-        maxDiscount:
-          type: number
-          example: 50000
-          description: Max discount cap (for percent type)
-        usageLimit:
-          type: number
-          example: 100
-          description: Total usage limit across all users
-        usedCount:
-          type: object
-          example: 0
-        perUserLimit:
-          type: number
-          example: 1
-          description: Max times a single user can use this voucher
-        validFrom:
-          format: date-time
-          type: string
-        validTo:
-          format: date-time
-          type: string
-        isActive:
-          type: object
-          example: true
-      required:
-        - _id
-        - createdAt
-        - updatedAt
-        - code
-        - type
-        - value
-        - usedCount
-        - validFrom
-        - validTo
-        - isActive
-    UpdateVoucherDto:
-      type: object
-      properties:
-        code:
-          type: string
-          example: SUMMER10
-        type:
-          type: string
-          enum: *ref_10
-          example: percent
-        value:
-          type: number
-          example: 10
-          description: Percent value or fixed VND amount
-        minOrderAmount:
-          type: number
-          example: 100000
-        maxDiscount:
-          type: number
-          example: 50000
-          description: Max discount cap (percent type only)
-        usageLimit:
-          type: number
-          example: 100
-        perUserLimit:
-          type: number
-          example: 1
-          description: Max uses per user
-        validFrom:
-          type: string
-          example: '2026-04-15T00:00:00.000Z'
-        validTo:
-          type: string
-          example: '2026-12-31T23:59:59.000Z'
-        isActive:
-          type: boolean
-          example: true
     ChatMessageDto:
       type: object
       properties:
         message:
           type: string
           example: Cho tôi xem các sản phẩm đang còn hàng
+        locale:
+          type: string
+          enum:
+            - vi
+            - en
+            - de
+          example: en
       required:
         - message
